@@ -33,7 +33,6 @@ screen = pygame.display.set_mode((game.settings.width * 15, game.settings.height
 pygame.display.set_caption('Gluttonous')
 
 crash_sound = pygame.mixer.Sound('./sound/crash.wav')
-point_collect = pygame.mixer.Sound('./sound/point_collect.wav')
 
 
 def text_objects(text, font, color=black):
@@ -77,6 +76,8 @@ def crash():
     pygame.mixer.Sound.play(crash_sound)
     message_display('crashed', game.settings.width / 2 * 15, game.settings.height / 3 * 15, white)
     time.sleep(1)
+    message_display('Game over!', game.settings.width / 2 * 15, game.settings.height / 1.75 * 15, red)
+    time.sleep(2)
 
 
 def initial_interface():
@@ -90,7 +91,7 @@ def initial_interface():
         screen.fill(white)
         message_display('Gluttonous', game.settings.width / 2 * 15, game.settings.height / 4 * 15)
 
-        button('Go!', 80, 240, 80, 40, green, bright_green, game_loop, 'human')
+        button('Play!', 80, 240, 80, 40, green, bright_green, game_loop, 'human')
         button('Quit', 270, 240, 80, 40, red, bright_red, quitgame)
 
         pygame.display.update()

@@ -3,6 +3,9 @@
 import pygame, random
 import numpy as np
 
+pygame.init()
+point_collect = pygame.mixer.Sound('./sound/point_collect.wav')
+
 class Settings:
     def __init__(self):
         # Screen Properties
@@ -107,6 +110,8 @@ class Strawberry():
 class Game:
     """
     """
+
+    # Controls
     def __init__(self):
         self.settings = Settings()
         self.snake = Snake()
@@ -155,6 +160,7 @@ class Game:
         self.snake.update()
         
         if self.snake.position == self.strawberry.position:
+            pygame.mixer.Sound.play(point_collect)
             self.strawberry.random_pos(self.snake)
             reward = 1
             self.snake.score += 1
@@ -177,9 +183,9 @@ class Game:
             end = True
 
         return end
-    
+
     def blit_score(self, color, screen):
         font = pygame.font.SysFont(None, 25)
         text = font.render('Score: ' + str(self.snake.score), True, color)
         screen.blit(text, (0, 0))
-
+    
