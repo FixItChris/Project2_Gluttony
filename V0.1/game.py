@@ -1,15 +1,11 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Wed Apr 25 15:19:25 2018
 
-@author: zou
-"""
 import pygame, random
 import numpy as np
 
 class Settings:
     def __init__(self):
-        # 屏幕属性
+        # Screen Properties
         self.width = 28
         self.height = 28
         self.rect_len = 15

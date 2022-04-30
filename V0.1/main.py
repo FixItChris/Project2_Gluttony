@@ -33,6 +33,7 @@ screen = pygame.display.set_mode((game.settings.width * 15, game.settings.height
 pygame.display.set_caption('Gluttonous')
 
 crash_sound = pygame.mixer.Sound('./sound/crash.wav')
+point_collect = pygame.mixer.Sound('./sound/point_collect.wav')
 
 
 def text_objects(text, font, color=black):
