@@ -1,17 +1,21 @@
 # -*- coding: utf-8 -*-
 """
+(UPDATE DOCSTRING)
 Created on Wed May 16 15:22:20 2018
 
 @author: zou
-"""
 
+"""
+# Importing necessary modules
 import pygame
 import time
 from pygame.locals import KEYDOWN, K_RIGHT, K_LEFT, K_UP, K_DOWN, K_ESCAPE
 from pygame.locals import QUIT
 
+# Importings Game class defined in 'game.py' which contains Settings, Snake and Strawberry classes
 from game import Game
 
+# Definition of colours - Established here for easy and intuitive implementation into later code
 black = pygame.Color(0, 0, 0)
 white = pygame.Color(255, 255, 255)
 
@@ -24,9 +28,12 @@ bright_blue = pygame.Color(32, 200, 200)
 yellow = pygame.Color(255, 205, 0)
 bright_yellow = pygame.Color(255, 255, 0)
 
+# Initialises Game class (from game.py) and defines settings
 game = Game()
-rect_len = game.settings.rect_len
-snake = game.snake
+rect_len = game.settings.rect_len # Width/height of square icons used during gameplay (in px)
+snake = game.snake # Defines snake class within game class for convienence later in the code
+
+# Initialises pygame and sets basic settings
 pygame.init()
 fpsClock = pygame.time.Clock()
 screen = pygame.display.set_mode((game.settings.width * 15, game.settings.height * 15))
@@ -80,6 +87,7 @@ def crash():
     time.sleep(2)
 
 
+# Main menu
 def initial_interface():
     intro = True
     while intro:
@@ -145,6 +153,6 @@ def human_move():
     move = game.direction_to_int(direction)
     return move
 
-
+# Main function - Entrypoint into program
 if __name__ == "__main__":
-    initial_interface()
+    initial_interface() # Links to function above that shows main menu with 'Play!' and 'Quit' buttons

@@ -1,17 +1,20 @@
 # -*- coding: utf-8 -*-
 
+# Importing necessary modules
 import pygame, random
 import numpy as np
 
 pygame.init()
+
+# Modification - Added sound effect for eating food
 point_collect = pygame.mixer.Sound('./sound/point_collect.wav')
 
 class Settings:
     def __init__(self):
         # Screen Properties
-        self.width = 28
-        self.height = 28
-        self.rect_len = 15
+        self.width = 28 # Number of squares from left to right in the grid
+        self.height = 28 # Number of squares from top to bottom on the grid
+        self.rect_len = 15 # Width/height of square icons used during gameplay (in px)
 
 class Snake:
     def __init__(self):
