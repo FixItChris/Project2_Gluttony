@@ -179,10 +179,13 @@ class Game:
     def game_end(self):
         end = False
         if self.snake.position[0] >= self.settings.width or self.snake.position[0] < 0:
+            print("game ends")
             end = True
         if self.snake.position[1] >= self.settings.height or self.snake.position[1] < 0:
+            print("game ends")
             end = True
         if self.snake.segments[0] in self.snake.segments[1:]:
+            print("game ends")
             end = True
 
         return end
