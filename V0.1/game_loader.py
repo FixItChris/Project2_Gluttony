@@ -24,7 +24,7 @@ def program_start_another(program, exit_code=0):
 
 pygame.init()
 
-pygame.display.set_caption('Pygame: Loading - Snake')
+pygame.display.set_caption('Pygame: Loading - Gluttonous')
 
 black = [0, 0, 0]
 green = [100, 255, 0]
