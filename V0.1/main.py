@@ -85,6 +85,8 @@ def crash():
     time.sleep(1)
     message_display('Game over!', game.settings.width / 2 * 15, game.settings.height / 1.75 * 15, red)
     time.sleep(2)
+    
+    print("This game has crashed")
 
 
 # Main menu
