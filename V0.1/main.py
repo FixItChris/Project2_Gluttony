@@ -36,10 +36,11 @@ snake = game.snake # Defines snake class within game class for convienence later
 # Initialises pygame and sets basic settings
 pygame.init()
 fpsClock = pygame.time.Clock()
-screen = pygame.display.set_mode((game.settings.width * 15, game.settings.height * 15))
-pygame.display.set_caption('Gluttonous')
+screen = pygame.display.set_mode((game.settings.width * 15, game.settings.height * 15)) # Sets display window size - Square - number of squares in grid * 15px
+pygame.display.set_caption('Gluttonous') # Title of popup window
 
-crash_sound = pygame.mixer.Sound('./sound/crash.wav')
+# Initialising game assets (audio)
+crash_sound = pygame.mixer.Sound('./sound/crash.wav') # Crash sound - plays after game is finished
 
 
 def text_objects(text, font, color=black):
@@ -77,7 +78,7 @@ def button(msg, x, y, w, h, inactive_color, active_color, action=None, parameter
 def quitgame():
     pygame.quit()
     quit()
-
+# Gameplay Screen
 
 def crash():
     pygame.mixer.Sound.play(crash_sound)
@@ -103,9 +104,9 @@ def initial_interface():
         button('Quit', 270, 240, 80, 40, red, bright_red, quitgame)
 
         pygame.display.update()
-        pygame.time.Clock().tick(15)
+        pygame.time.Clock().tick(15) # Main menu refresh rate?
 
-
+# Gameplay Screen
 def game_loop(player, fps=10):
     game.restart_game()
 
