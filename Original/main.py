@@ -76,7 +76,7 @@ def quitgame():
 def crash():
     pygame.mixer.Sound.play(crash_sound)
     message_display('crashed', game.settings.width / 2 * 15, game.settings.height / 3 * 15, white)
-    time.sleep(1)
+    time.sleep(5)
 
 
 def initial_interface():

@@ -108,6 +108,10 @@ def initial_interface():
 
 # Gameplay Screen
 def game_loop(player, fps=10):
+    # modification - fixing the instant kill glitch, once ends change snakes direction to right
+    game.snake.facing = "right"
+    
+    
     game.restart_game()
 
     while not game.game_end():
