@@ -90,11 +90,13 @@ def crash():
     time.sleep(1)
     message_display('Game over!', game.settings.width / 2 * 15, game.settings.height / 1.75 * 15, red)
     time.sleep(2)
+    screen.fill(white) # Background colour
 
 
 # Main menu - First function called by code
 def initial_interface():
     intro = True
+    screen.fill(white) # Background colour
     while intro:
 
         for event in pygame.event.get(): # Alternative for if the application is closed
@@ -102,14 +104,13 @@ def initial_interface():
                 pygame.quit()
                 quit() # Modification - Gracefully closes python program if application is closed
 
-        screen.fill(white) # Background colour
         message_display('Gluttonous', game.settings.width / 2 * 15, game.settings.height / 4 * 15) # Title
 
         button('Play!', 80, 240, 80, 40, green, bright_green, game_loop, 'human') # Calls game_loop function
         button('Quit', 270, 240, 80, 40, red, bright_red, quitgame) # Calls quitgame function
 
         pygame.display.update() # Refresh screen (Bug - while loop causes flickering of buttons)
-        pygame.time.Clock().tick(15)
+        pygame.time.Clock().tick()
 
 
 # Gameplay Screen
