@@ -15,6 +15,7 @@ from pygame.locals import QUIT
 # Imports Game class defined in 'game.py' which contains Settings, Snake and Strawberry classes
 from game import Game
 
+
 # Definition of colours - Established here for easy and intuitive implementation into later code
 black = pygame.Color(0, 0, 0)
 white = pygame.Color(255, 255, 255)
@@ -38,6 +39,10 @@ pygame.init()
 fpsClock = pygame.time.Clock()
 screen = pygame.display.set_mode((game.settings.width * 15, game.settings.height * 15)) # Sets display window size - Square - number of squares in grid * 15px
 pygame.display.set_caption('Gluttonous') # Title of popup window
+
+# Modification - Adding application icon
+pygame_icon = pygame.image.load('./logos/application.png')
+pygame.display.set_icon(pygame_icon)
 
 # Initialising game assets (audio)
 crash_sound = pygame.mixer.Sound('./sound/crash.wav') # Crash sound - plays after game is finished
