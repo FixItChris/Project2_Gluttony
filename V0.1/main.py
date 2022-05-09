@@ -102,13 +102,15 @@ def crash():
 def initial_interface():
     intro = True
     screen.fill(white) # Background colour
+    
+    bg_img = pygame.image.load("logos/gamelogo.png") #loads the background image (*CURRENTLY the standin)
+    screen.blit(bg_img, (0,0))
     while intro:
-
         for event in pygame.event.get(): # Alternative for if the application is closed
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit() # Modification - Gracefully closes python program if application is closed
-
+                
         message_display('Gluttonous', game.settings.width / 2 * 15, game.settings.height / 4 * 15) # Title
 
         button('Play!', 80, 240, 80, 40, green, bright_green, game_loop, 'human') # Calls game_loop function
@@ -121,7 +123,7 @@ def initial_interface():
 # Gameplay Screen
 def game_loop(player, fps=10):
     game.restart_game()
-
+    bg_img2 = pygame.image.load("logos/snake_logo.png") #loads the background image (*CURRENTLY the standin)
     while not game.game_end():
 
         pygame.event.pump()
@@ -132,7 +134,8 @@ def game_loop(player, fps=10):
         game.do_move(move) # Converts raw user input to update snake
 
         screen.fill(black) # Background colour
-
+        
+        screen.blit(bg_img2, (0, 0))
         game.snake.blit(rect_len, screen) # Draws/updates snake
         game.strawberry.blit(screen) # Draws/updates food
         game.blit_score(white, screen) # Draws/updates user score
