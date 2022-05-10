@@ -37,15 +37,19 @@ snake = game.snake # Defines snake class within game class for convienence later
 # Initialises pygame and sets basic settings
 pygame.init()
 fpsClock = pygame.time.Clock()
-screen = pygame.display.set_mode((game.settings.width * 15, game.settings.height * 15)) # Sets display window size - Square - number of squares in grid * 15px
-pygame.display.set_caption('Gluttonous') # Title of popup window
+
+# Sets display window size - Square - number of squares in grid * 15px
+screen = pygame.display.set_mode((game.settings.width * 15, game.settings.height * 15))
+
+# Title of popup window
+pygame.display.set_caption('Gluttonous')
 
 # Modification - Adding application icon
 pygame_icon = pygame.image.load('./logos/application.png')
 pygame.display.set_icon(pygame_icon)
 
 # Initialising game assets (audio)
-crash_sound = pygame.mixer.Sound('./sound/crash.wav') # Crash sound - plays after game is finished
+crash_sound = pygame.mixer.Sound('./sound/crash.wav')
 
 
 # Applies required styling to the text given as input
@@ -67,15 +71,17 @@ def message_display(text, x, y, color=black):
 def button(msg, x, y, w, h, inactive_color, active_color, action=None, parameter=None):
     mouse = pygame.mouse.get_pos() # Gets position of the mouse cursor
     click = pygame.mouse.get_pressed() # Checks if mouse is being clicked
+    
     if x + w > mouse[0] > x and y + h > mouse[1] > y: # Checks if mouse is over the button
-        pygame.draw.rect(screen, active_color, (x, y, w, h)) # Display button - changes colour when hovering on
+        pygame.draw.rect(screen, active_color, (x, y, w, h)) # Display button changes colour
         if click[0] == 1 and action != None: # Checks if mouse is clicked
             if parameter != None:
                 action(parameter) # Call specified function if it has parameter
             else:
                 action() # Call specified function if it does not have a parameter
     else:
-        pygame.draw.rect(screen, inactive_color, (x, y, w, h)) # Display button - changes back to original colour
+        # Display button changes back to original colour
+        pygame.draw.rect(screen, inactive_color, (x, y, w, h)) 
 
     smallText = pygame.font.SysFont('comicsansms', 20) # Defines font for button text
     TextSurf, TextRect = text_objects(msg, smallText)
@@ -91,7 +97,8 @@ def quitgame():
 # Displays the 'crash' screen when required
 def crash():
     pygame.mixer.Sound.play(crash_sound) # Plays sound effect
-    message_display('crashed', game.settings.width / 2 * 15, game.settings.height / 3 * 15, white) # Displays on screen
+    # Prints game over message on screen
+    message_display('crashed', game.settings.width / 2 * 15, game.settings.height / 3 * 15, white)
     time.sleep(1)
     message_display('Game over!', game.settings.width / 2 * 15, game.settings.height / 1.75 * 15, red)
     time.sleep(2)
@@ -128,12 +135,26 @@ def game_loop(player, fps=10):
 
         move = human_move() # Receives input from user
         fps = 5 # Determines how often the game is refreshed (speed of snake)
+        
 
+        current_segments = list(game.snake.segments)
         game.do_move(move) # Converts raw user input to update snake
 
         screen.fill(black) # Background colour
+        
+        # Modification - Snake head no longer disappears when player loses
+        if not game.game_end():
+            game.snake.blit(rect_len, screen) # Updates snake 
 
-        game.snake.blit(rect_len, screen) # Draws/updates snake
+        else:
+            # Snake is updated using old position
+            game.snake.segments = current_segments
+            game.snake.blit(rect_len, screen)
+            game.strawberry.blit(screen)
+            game.blit_score(white, screen)
+            break
+
+
         game.strawberry.blit(screen) # Draws/updates food
         game.blit_score(white, screen) # Draws/updates user score
 
@@ -141,7 +162,7 @@ def game_loop(player, fps=10):
         pygame.display.flip()
         fpsClock.tick(fps)
 
-    crash() # Triggers crash sequence once game is finished from function defined above
+    crash() # Triggers crash sequence once game is finished
 
 
 # Reads user input
@@ -165,9 +186,9 @@ def human_move():
             if event.key == K_ESCAPE:
                 pygame.event.post(pygame.event.Event(QUIT)) # Quits game if esc is pressed
 
-    move = game.direction_to_int(direction) # Translates key pressed into corresponding integer
+    move = game.direction_to_int(direction) # Translates key pressed to int
     return move
 
 # Main function - Entry point into program
 if __name__ == "__main__":
-    initial_interface() # Links to function above that shows main menu with 'Play!' and 'Quit' buttons
+    initial_interface() # Loads main menu
