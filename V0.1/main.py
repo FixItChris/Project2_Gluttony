@@ -123,7 +123,7 @@ def initial_interface():
 # Gameplay Screen
 def game_loop(player, fps=10):
     game.restart_game()
-    bg_img2 = pygame.image.load("logos/snake_logo.png") #loads the background image (*CURRENTLY the standin)
+    bg_img2 = pygame.image.load("images/background.png") #loads the background image (*CURRENTLY the standin)
     while not game.game_end():
 
         pygame.event.pump()
@@ -134,7 +134,6 @@ def game_loop(player, fps=10):
         game.do_move(move) # Converts raw user input to update snake
 
         screen.fill(black) # Background colour
-        
         screen.blit(bg_img2, (0, 0))
         game.snake.blit(rect_len, screen) # Draws/updates snake
         game.strawberry.blit(screen) # Draws/updates food
