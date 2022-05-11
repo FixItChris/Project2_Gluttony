@@ -228,5 +228,5 @@ class Game:
     def blit_score(self, color, screen):
         font = pygame.font.SysFont(None, 25) # Sets font
         text = font.render('Score: ' + str(self.snake.score), True, color) # Score text
-        screen.blit(text, (0, 0)) # Shows score on screen, in top left corner
+        screen.blit(text, (5, 5)) # Shows score on screen, in top left corner
     
