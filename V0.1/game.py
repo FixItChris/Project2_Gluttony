@@ -120,7 +120,7 @@ class Strawberry():
         # Randomly selects image of food to display on screen
         self.style = str(random.randint(1, 8))
         self.image = pygame.image.load('images/food' + str(self.style) + '.bmp')                
-        
+
         # Randomly selects position of food on board
         self.position[0] = random.randint(0, self.settings.width-1)
         self.position[1] = random.randint(0, self.settings.height-1)
