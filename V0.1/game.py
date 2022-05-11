@@ -91,16 +91,18 @@ class Snake:
    
     # Updates position of snake's head by modifying position variable
     def update(self):
-        if self.facing == 'right': # Input from user
+        # Input from user
+        if self.facing == 'right': 
             self.position[0] += 1
-        if self.facing == 'left': # Input from user
+        if self.facing == 'left': 
             self.position[0] -= 1
-        if self.facing == 'up': # Input from user
+        if self.facing == 'up': 
             self.position[1] -= 1
-        if self.facing == 'down': # Input from user
+        if self.facing == 'down':
             self.position[1] += 1
-
-        self.segments.insert(0, list(self.position)) # Updates list containing each part of the snake
+        
+        # Updates list containing each part of the snake
+        self.segments.insert(0, list(self.position))
 
 
 # Defines mechanics of the strawberry on the board
@@ -111,7 +113,7 @@ class Strawberry():
         # Randomly selects image of food to display on screen
         self.style = str(random.randint(1, 8))
         self.image = pygame.image.load('images/food' + str(self.style) + '.bmp')
-        self.initialize() # Runs initialize function below to set initial position of strawberry
+        self.initialize() # Sets initial position of strawberry
     
     # Defines random position to place new strawberry
     def random_pos(self, snake):
@@ -211,11 +213,14 @@ class Game:
     # Checks if the game is finished (snake has crashed)
     def game_end(self):
         end = False
-        if self.snake.position[0] >= self.settings.width or self.snake.position[0] < 0: # Crashes against left/right border
+        # Crashes against left/right border
+        if self.snake.position[0] >= self.settings.width or self.snake.position[0] < 0: 
             end = True
-        if self.snake.position[1] >= self.settings.height or self.snake.position[1] < 0: # Crashes against top/bottom border
+        # Crashes against top/bottom border   
+        if self.snake.position[1] >= self.settings.height or self.snake.position[1] < 0: 
             end = True
-        if self.snake.segments[0] in self.snake.segments[1:]: # Crashes into itself
+        # Crashes into itself
+        if self.snake.segments[0] in self.snake.segments[1:]: 
             end = True
 
         return end
