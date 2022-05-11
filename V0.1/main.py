@@ -202,11 +202,6 @@ def game_loop(player, fps=10):
             else:    
                 message = 'Highscore: '+ str(high_score)
                 small_message(white, screen, message, pos_x, 5)
-
-
-            break
-
-
         
         game.strawberry.blit(screen) # Draws/updates food
         game.blit_score(white, screen) # Draws/updates user score
