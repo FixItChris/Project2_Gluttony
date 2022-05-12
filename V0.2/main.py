@@ -133,16 +133,25 @@ def crash():
     # Prints game over message on screen
     message_display('crashed', game.settings.width / 2 * 15, game.settings.height / 3 * 15, white)
     time.sleep(1)
-    if game.snake.score > high_score:
+    if config.has_potion:
+        config.has_potion = 0
+        config.new_life = 1
+        message_display('Potion Used', game.settings.width / 2 * 15, game.settings.height / 1.75 * 15, green)
+        time.sleep(2)
+        game_loop('human')
+
+    elif game.snake.score > high_score:
         message_display('NEW HIGHSCORE!', game.settings.width / 2 * 15, game.settings.height / 1.75 * 15, green)
+        time.sleep(2)
     else:   
         message_display('Game over!', game.settings.width / 2 * 15, game.settings.height / 1.75 * 15, red)
-    time.sleep(2)
+        time.sleep(2)
     screen.fill(white) # Background colour
 
 
 # Main menu - First function called by code
 def initial_interface():
+    config.new_life = 0
     intro = True
     screen.fill(white) # Background colour
     while intro:
@@ -150,7 +159,7 @@ def initial_interface():
         for event in pygame.event.get(): 
             if event.type == pygame.QUIT:
                 pygame.quit()
-                # Modification - Gracefully closes python program if application is closed
+                # Modification - Gracefully closes python program
                 quit() 
 
         message_display('Gluttonous', game.settings.width / 2 * 15, game.settings.height / 4 * 15) # Title
@@ -169,10 +178,15 @@ def initial_interface():
 # Gameplay Screen
 def game_loop(player, fps=10):
     game.restart_game()
+    if config.new_life:
+        config.new_life = 0
+
     pos_x = game.settings.width*15/2 - 45
     high_score = db.session.query(func.max(Model.score)).scalar()
     config.fps = fps
     config.game_over = 0
+
+    print(game.snake.segments)
 
     while not game.game_end() and not config.game_over:
         pygame.event.pump()
@@ -197,18 +211,20 @@ def game_loop(player, fps=10):
             game.snake.blit(rect_len, screen)
         
         game.strawberry.blit(screen) # Draws/updates food
-        game.blit_score(white, screen) # Draws/updates user score
-
-        speed_message = 'Speed: ' + str(config.fps)
-        small_message(white, screen, speed_message, game.settings.width*15-85, 5)
-
+        
         if config.mushroom_out:
             game.mushroom.blit(screen)
 
         if config.super_fruit_out:
             game.super_fruit.blit(screen)
-
         
+        if config.potion_out:
+            game.potion.blit(screen)
+
+
+        game.blit_score(white, screen) # Draws/updates user score
+        speed_message = 'Speed: ' + str(config.fps)
+        small_message(white, screen, speed_message, game.settings.width*15-85, 5)        
         if game.snake.score > high_score:
             message = 'Highscore: ' + str(game.snake.score)
             small_message(white, screen, message, pos_x, 5)

@@ -12,6 +12,7 @@ point_collect = pygame.mixer.Sound('./sound/point_collect.wav')
 mushroom_fast = pygame.mixer.Sound('./sound/fast_mushroom.mp3')
 mushroom_slow = pygame.mixer.Sound('./sound/slow_mushroom.mp3')
 super_sound = pygame.mixer.Sound('./sound/super_fruit.mp3')
+potion_sound = pygame.mixer.Sound('./sound/potion.mp3')
 
 # Defines properties of the screen
 class Settings:
@@ -48,6 +49,11 @@ class Snake:
         self.segments = [[6 - i, 6] for i in range(3)] # Position of entire snake on grid
         self.score = 0 # Sets/resets user score to 0
         self.facing = "right" # Sets snake to be facing to the right (Modification - Bug Fix)
+
+    def new_life(self):
+        self.position = [6, 6]
+        self.segments = [[6 - i, 6] for i in range(self.score+3)]
+        self.facing = "right"
     
     # Moves snake's body components on screen
     def blit_body(self, x, y, screen):
@@ -67,7 +73,7 @@ class Snake:
     
     # Moves snake's tail component on screen
     def blit_tail(self, x, y, screen):
-        j=0
+        j = 0
         while True:
             # Determines which way tail needs to be facing
             tail_direction = [self.segments[-2-j][i] - self.segments[-1-j][i] for i in range(2)] 
@@ -172,7 +178,18 @@ class Super_Fruit(Strawberry):
         if self.position in snake.segments:
             self.random_pos(snake)
 
+class Potion(Strawberry):
+    def __init__(self, settings):
+        super().__init__(settings)
+        self.image = pygame.image.load('images/snake_potion.png')
+    
+    def random_pos(self, snake):
+        self.position[0] = random.randint(0, self.settings.width-1)
+        self.position[1] = random.randint(0, self.settings.height-1)
 
+        if self.position in snake.segments:
+            self.random_pos(snake)
+ 
 
 # Initialises all other previous classes, and defines functions for user input/overall gameplay
 class Game:
@@ -184,6 +201,7 @@ class Game:
         self.strawberry = Strawberry(self.settings) # Initialises Strawberry class above
         self.mushroom = Mushroom(self.settings)
         self.super_fruit = Super_Fruit(self.settings)
+        self.potion = Potion(self.settings)
         self.move_dict = {0 : 'up',
                           1 : 'down',
                           2 : 'left',
@@ -191,10 +209,15 @@ class Game:
         
     # Resets to initial values of the snake/strawberry when starting new game
     def restart_game(self):
-        self.snake.initialize()
+        if config.new_life:
+            self.snake.new_life()
+        else:
+            self.snake.initialize()
         self.strawberry.initialize()
         config.mushroom_out = 0
         config.super_fruit_out = 0
+        config.potion_out = 0
+        config.has_potion = 0 
     
     # Defines current state of the snake and strawberry during gameplay (CURRENTLY UNUSED)
     def current_state(self):         
@@ -242,28 +265,39 @@ class Game:
             self.snake.score += 1 # Updates user score
         
             rng = random.randint(0,100)
-            if rng<=10 and not config.super_fruit_out:
+            if rng > 95 and not config.potion_out and not config.has_potion:
+                config.potion_out = 1
+                self.potion.random_pos(self.snake)
+                self.potion.blit(screen)
+
+            elif rng <= 10 and not config.super_fruit_out:
                 config.super_fruit_out = 1
                 self.super_fruit.random_pos(self.snake)
                 self.super_fruit.blit(screen)
             
-            elif rng<=25 and not config.mushroom_out:
+            elif rng <= 25 and not config.mushroom_out:
                 config.mushroom_out = 1
                 self.mushroom.random_pos(self.snake)
                 self.mushroom.blit(screen)
 
 
+        elif self.snake.position == self.potion.position and config.potion_out:
+            pygame.mixer.Sound.play(potion_sound)
+            config.potion_out = 0
+            config.has_potion = 1
+            reward = 2
+
         elif self.snake.position == self.super_fruit.position and config.super_fruit_out:
             pygame.mixer.Sound.play(super_sound)
             config.super_fruit_out = 0
-            reward = 2
+            reward = 3
             self.snake.score += 3
             for i in range(2):
                 self.snake.segments.append(self.snake.segments[-1])
 
         elif self.snake.position == self.mushroom.position and config.mushroom_out:
             config.mushroom_out = 0
-            reward = 3
+            reward = 4
             
             if random.randint(0,1) or config.fps<=5:
                 config.fps += 3
