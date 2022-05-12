@@ -205,6 +205,9 @@ def game_loop(player, fps=10):
         if config.mushroom_out:
             game.mushroom.blit(screen)
 
+        if config.super_fruit_out:
+            game.super_fruit.blit(screen)
+
         
         if game.snake.score > high_score:
             message = 'Highscore: ' + str(game.snake.score)

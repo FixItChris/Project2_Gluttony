@@ -11,6 +11,7 @@ pygame.init() # Initialise pygame module
 point_collect = pygame.mixer.Sound('./sound/point_collect.wav')
 mushroom_fast = pygame.mixer.Sound('./sound/fast_mushroom.mp3')
 mushroom_slow = pygame.mixer.Sound('./sound/slow_mushroom.mp3')
+super_sound = pygame.mixer.Sound('./sound/super_fruit.mp3')
 
 # Defines properties of the screen
 class Settings:
@@ -66,18 +67,25 @@ class Snake:
     
     # Moves snake's tail component on screen
     def blit_tail(self, x, y, screen):
-        # Determines which way tail needs to be facing
-        tail_direction = [self.segments[-2][i] - self.segments[-1][i] for i in range(2)] 
-        
-        # Checks which way tail needs to be facing after updating
-        if tail_direction == [0, -1]:
-            screen.blit(self.tail_up, (x, y))
-        elif tail_direction == [0, 1]:
-            screen.blit(self.tail_down, (x, y))  
-        elif tail_direction == [-1, 0]:
-            screen.blit(self.tail_left, (x, y))  
-        else:
-            screen.blit(self.tail_right, (x, y))  
+        j=0
+        while True:
+            # Determines which way tail needs to be facing
+            tail_direction = [self.segments[-2-j][i] - self.segments[-1-j][i] for i in range(2)] 
+
+            # Checks which way tail needs to be facing after updating
+            if tail_direction == [0, -1]:
+                screen.blit(self.tail_up, (x, y))
+                break
+            elif tail_direction == [0, 1]:
+                screen.blit(self.tail_down, (x, y))
+                break
+            elif tail_direction == [-1, 0]:
+                screen.blit(self.tail_left, (x, y))
+                break
+            elif tail_direction == [1, 0]:
+                screen.blit(self.tail_right, (x, y))
+                break
+            j += 1
     
     # Combines above 3 functions so that all components of the snake are moved
     def blit(self, rect_len, screen):
@@ -152,6 +160,18 @@ class Mushroom(Strawberry):
         if self.position in snake.segments:
             self.random_pos(snake)
 
+class Super_Fruit(Strawberry):
+    def __init__(self, settings):
+        super().__init__(settings)
+        self.image = pygame.image.load('images/stone.png') # REPLACE
+    
+    def random_pos(self, snake):
+        self.position[0] = random.randint(0, self.settings.width-1)
+        self.position[1] = random.randint(0, self.settings.height-1)
+
+        if self.position in snake.segments:
+            self.random_pos(snake)
+
 
 
 # Initialises all other previous classes, and defines functions for user input/overall gameplay
@@ -163,6 +183,7 @@ class Game:
         self.snake = Snake() # Initialises Snake class above
         self.strawberry = Strawberry(self.settings) # Initialises Strawberry class above
         self.mushroom = Mushroom(self.settings)
+        self.super_fruit = Super_Fruit(self.settings)
         self.move_dict = {0 : 'up',
                           1 : 'down',
                           2 : 'left',
@@ -173,6 +194,7 @@ class Game:
         self.snake.initialize()
         self.strawberry.initialize()
         config.mushroom_out = 0
+        config.super_fruit_out = 0
     
     # Defines current state of the snake and strawberry during gameplay (CURRENTLY UNUSED)
     def current_state(self):         
@@ -220,15 +242,28 @@ class Game:
             self.snake.score += 1 # Updates user score
         
             rng = random.randint(0,100)
-            if rng<=20 and not config.mushroom_out:
+            if rng<=10 and not config.super_fruit_out:
+                config.super_fruit_out = 1
+                self.super_fruit.random_pos(self.snake)
+                self.super_fruit.blit(screen)
+            
+            elif rng<=25 and not config.mushroom_out:
                 config.mushroom_out = 1
                 self.mushroom.random_pos(self.snake)
                 self.mushroom.blit(screen)
 
-        elif self.snake.position == self.mushroom.position:
-            config.mushroom_out = 0
+
+        elif self.snake.position == self.super_fruit.position and config.super_fruit_out:
+            pygame.mixer.Sound.play(super_sound)
+            config.super_fruit_out = 0
             reward = 2
-            self.strawberry.random_pos(self.snake)
+            self.snake.score += 3
+            for i in range(2):
+                self.snake.segments.append(self.snake.segments[-1])
+
+        elif self.snake.position == self.mushroom.position and config.mushroom_out:
+            config.mushroom_out = 0
+            reward = 3
             
             if random.randint(0,1) or config.fps<=5:
                 config.fps += 3
