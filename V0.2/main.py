@@ -22,6 +22,7 @@ from sqlalchemy import func
 import config
 import random
 
+
 app = flask.Flask(__name__)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///snake.db'
@@ -34,6 +35,7 @@ white = pygame.Color(255, 255, 255)
 
 green = pygame.Color(0, 200, 0)
 bright_green = pygame.Color(0, 255, 0)
+load_green = pygame.Color(100, 255, 0)
 red = pygame.Color(200, 0, 0)
 bright_red = pygame.Color(255, 0, 0)
 blue = pygame.Color(32, 178, 170)
@@ -47,15 +49,52 @@ rect_len = game.settings.rect_len # Width/height of square icons used during gam
 snake = game.snake # Defines snake class within game class for convienence later in the code
 
 # Initialises pygame and sets basic settings
+
+#####Intro#####
+
+def import_and_install(package):
+    try:
+        return __import__(package)
+    except ImportError:
+        return None
+        
+import_and_install('numpy')
+import_and_install('pygame')
+
 config.player_name = input("Before playing, please enter your name: ")
 pygame.init()
 fpsClock = pygame.time.Clock()
 
+font_descript = pygame.font.SysFont("arial", 10, True)
+background = pygame.image.load('./logos/gamelogo.png')
+
 # Sets display window size - Square - number of squares in grid * 15px
 screen = pygame.display.set_mode((game.settings.width * 15, game.settings.height * 15))
 
-# Title of popup window
-pygame.display.set_caption('Gluttonous')
+def kick_start(background, progress=0):
+    pygame.display.set_caption('Pygame: Loading - Gluttonous')
+    font_descript = pygame.font.SysFont("arial", 10, True)
+    while (progress/2) < 100:
+        time_keep = 0.003
+        time_increase = 1
+        progress += time_increase
+        
+        screen.fill(white)
+        screen.blit(background, (-80, 10))
+        if progress > 100:
+            time.sleep(1)
+            break
+        if (progress/2) > 30:
+            pygame.draw.rect(screen, green, [0, 400, 420, 15])
+        else:
+            pygame.draw.rect(screen, green, [0, 400, progress, 15])
+        text = font_descript.render("Loading: " + str(int(progress)) + "%", True, black)
+        screen.blit(text, [170, 402.5])
+        pygame.display.flip()
+        time.sleep(time_keep)
+
+################
+
 
 # Modification - Adding application icon
 pygame_icon = pygame.image.load('./logos/application.png')
@@ -151,6 +190,9 @@ def crash():
 
 # Main menu - First function called by code
 def initial_interface():
+    # Title of popup window
+    pygame.display.set_caption('Gluttonous')
+    
     config.new_life = 0
     intro = True
     screen.fill(white) # Background colour
@@ -186,7 +228,6 @@ def game_loop(player, fps=10):
     config.fps = fps
     config.game_over = 0
 
-    print(game.snake.segments)
 
     while not game.game_end() and not config.game_over:
         pygame.event.pump()
@@ -276,4 +317,5 @@ def human_move():
 
 # Main function - Entry point into program
 if __name__ == "__main__":
+    kick_start(background)
     initial_interface() # Loads main menu
