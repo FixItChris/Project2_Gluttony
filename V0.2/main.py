@@ -54,7 +54,7 @@ pygame.init()
 fpsClock = pygame.time.Clock()
 
 # Sets display window size - Square - number of squares in grid * 15px
-screen = pygame.display.set_mode((game.settings.width * 15, game.settings.height * 15 + 300))
+screen = pygame.display.set_mode((game.settings.width * 15, game.settings.height * 15 + 25))
 
 # Title of popup window
 pygame.display.set_caption('Gluttonous')
@@ -206,7 +206,7 @@ def game_loop(player, fps=10):
     config.fps = fps
     config.game_over = 0
 
-    print(game.snake.segments)
+    # print(game.snake.segments) debug
 
     while not game.game_end() and not config.game_over:
         pygame.event.pump()
@@ -219,7 +219,7 @@ def game_loop(player, fps=10):
         game.do_move(move, screen) # Converts raw user input to update snake
 
         screen.fill(black) # Background colour
-        screen.blit(bg_img2, (0, 0))
+        screen.blit(bg_img2, (0, 25))
         
         # Modification - Snake head no longer disappears when player loses
         if not game.game_end():

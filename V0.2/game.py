@@ -111,14 +111,14 @@ class Snake:
     # Combines above 3 functions so that all components of the snake are moved
     def blit(self, rect_len, screen):
         # Updates head
-        self.blit_head(self.segments[0][0]*rect_len, self.segments[0][1]*rect_len, screen)                
+        self.blit_head(self.segments[0][0]*rect_len, self.segments[0][1]*rect_len + 25, screen)
         
         # Updates body
         for position in self.segments[1:-1]:
-            self.blit_body(position[0]*rect_len, position[1]*rect_len, screen)
+            self.blit_body(position[0]*rect_len, position[1]*rect_len + 25, screen)
         
         # Updates tail
-        self.blit_tail(self.segments[-1][0]*rect_len, self.segments[-1][1]*rect_len, screen)                
+        self.blit_tail(self.segments[-1][0]*rect_len, self.segments[-1][1]*rect_len + 25, screen)
             
    
     # Updates position of snake's head by modifying position variable
@@ -144,7 +144,8 @@ class Strawberry():
         
         # Randomly selects image of food to display on screen
         self.style = str(random.randint(1, 8))
-        self.image = pygame.image.load('images/food' + str(self.style) + '.bmp')
+        self.image = pygame.image.load('images/main.png')
+        #self.image = pygame.image.load('images/food' + str(self.style) + '.bmp')
         self.initialize() # Sets initial position of strawberry
     
     # Defines random position to place new strawberry
@@ -152,7 +153,7 @@ class Strawberry():
         # Randomly selects image of food to display on screen
         self.style = str(random.randint(1, 8))
         
-        self.image = pygame.image.load('images/mushroom.png')
+        self.image = pygame.image.load('images/main.png')
         #self.image = pygame.image.load('images/mushroom' + str(self.style) + '.png')
         
         # Randomly selects position of food on board
@@ -164,7 +165,7 @@ class Strawberry():
 
     # Displays image of strawberry on screen
     def blit(self, screen):
-        screen.blit(self.image, [p * self.settings.rect_len for p in self.position])
+        screen.blit(self.image, [self.position[0]*self.settings.rect_len, self.position[1]*self.settings.rect_len + 25])
    
     # Sets first position of food
     def initialize(self):
@@ -186,7 +187,7 @@ class Mushroom(Strawberry):
 class Super_Fruit(Strawberry):
     def __init__(self, settings):
         super().__init__(settings)
-        self.image = pygame.image.load('images/stone.png') # REPLACE
+        self.image = pygame.image.load('images/super_fruit.png') # REPLACE
     
     def random_pos(self, snake):
         self.position[0] = random.randint(0, self.settings.width-1)
@@ -198,7 +199,7 @@ class Super_Fruit(Strawberry):
 class Potion(Strawberry):
     def __init__(self, settings):
         super().__init__(settings)
-        self.image = pygame.image.load('images/snake_potion.png')
+        self.image = pygame.image.load('images/potion.png')
     
     def random_pos(self, snake):
         self.position[0] = random.randint(0, self.settings.width-1)
@@ -340,7 +341,7 @@ class Game:
         if self.snake.position[0] >= self.settings.width or self.snake.position[0] < 0: 
             end = True
         # Crashes against top/bottom border   
-        if self.snake.position[1] >= self.settings.height or self.snake.position[1] < 0: 
+        if self.snake.position[1] >= self.settings.height or self.snake.position[1] < 0: # LUUG code
             end = True
         # Crashes into itself
         if self.snake.segments[0] in self.snake.segments[1:]: 
