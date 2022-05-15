@@ -48,7 +48,6 @@ game = Game()
 rect_len = game.settings.rect_len # Width/height of square icons used during gameplay (in px)
 snake = game.snake # Defines snake class within game class for convienence later in the code
 
-# Initialises pygame and sets basic settings
 
 #####Intro#####
 

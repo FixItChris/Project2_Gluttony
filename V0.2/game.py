@@ -275,7 +275,7 @@ class Game:
                 self.super_fruit.random_pos(self.snake)
                 self.super_fruit.blit(screen)
             
-            elif rng <= 25 and not config.mushroom_out:
+            elif rng <= 25 and rng > 10 and not config.mushroom_out:
                 config.mushroom_out = 1
                 self.mushroom.random_pos(self.snake)
                 self.mushroom.blit(screen)
