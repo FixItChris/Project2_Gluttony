@@ -109,6 +109,7 @@ class Snake:
             j += 1
             # end point
     # Combines above 3 functions so that all components of the snake are moved
+    # + 25 offsets the boundary of the board so the player does not travel across the score
     def blit(self, rect_len, screen):
         # Updates head
         self.blit_head(self.segments[0][0]*rect_len, self.segments[0][1]*rect_len + 25, screen)

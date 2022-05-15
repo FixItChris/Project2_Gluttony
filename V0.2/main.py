@@ -54,6 +54,7 @@ pygame.init()
 fpsClock = pygame.time.Clock()
 
 # Sets display window size - Square - number of squares in grid * 15px
+# + 25 is the amount of pixels were extended for the score
 screen = pygame.display.set_mode((game.settings.width * 15, game.settings.height * 15 + 25))
 
 # Title of popup window
@@ -161,11 +162,10 @@ def crash():
         message_display('Game over!', game.settings.width / 2 * 15, game.settings.height / 1.75 * 15, red)
         time.sleep(2)
         
-    screen.fill(white) # Background colour (correct this to appropriate background)
+    screen.fill(white)
+    # loads and prints background of the main page
     bg_img = pygame.image.load("logos/gamelogo.png")
     screen.blit(bg_img, (0,0))
-    
-
 
 # Main menu - First function called by code
 def initial_interface():
@@ -173,6 +173,7 @@ def initial_interface():
     intro = True
     screen.fill(white) # Background colour
     
+    # loads and prints background of the main page
     bg_img = pygame.image.load("logos/gamelogo.png")
     screen.blit(bg_img, (0,0))
         
@@ -201,7 +202,7 @@ def initial_interface():
 def game_loop(player, fps=10):
     game.restart_game()
     
-    bg_img2 = pygame.image.load("images/background.png") #loads the background image (*CURRENTLY the standin)
+    bg_img2 = pygame.image.load("images/background.png") # loads board background
 
     if config.new_life:
         config.new_life = 0
@@ -213,13 +214,8 @@ def game_loop(player, fps=10):
 
     # print(game.snake.segments) debug
     
-    #pygame.mixer.init()
-    
-    MUSIC_END = pygame.USEREVENT+1
-    pygame.mixer.music.set_endevent(MUSIC_END)
-
-    pygame.mixer.music.load('sound/background_music.mp3')
-    pygame.mixer.music.play(-1)
+    pygame.mixer.music.load('sound/background_music.mp3') # loads the music
+    pygame.mixer.music.play(-1) # plays the music on repeat
 
     while not game.game_end() and not config.game_over:
         pygame.event.pump()
@@ -230,8 +226,7 @@ def game_loop(player, fps=10):
         current_segments = list(game.snake.segments)
         game.do_move(move, screen) # Converts raw user input to update snake
 
-        screen.fill(black) # Background colour
-        screen.blit(bg_img2, (0, 25))
+        screen.blit(bg_img2, (0, 25)) # prints the new background in each draw call
         
         
         # Modification - Snake head no longer disappears when player loses
