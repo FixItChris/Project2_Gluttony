@@ -99,7 +99,7 @@ def team_logo_display():
     pygame.display.set_caption('Pygame: Loading - Gluttonous')
     time_kept = 0
     time_keep = 0.03
-    screen.fill(black)
+    screen.fill(white)
     while time_kept < 50:
         time_kept += 1
         screen.blit(team_logo, ((game.settings.width * 15 - team_logo.get_width())/2, (game.settings.height * 15 - team_logo.get_height() - 20)/2))
