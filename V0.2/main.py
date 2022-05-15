@@ -322,7 +322,7 @@ def human_move():
                 direction = 'up'
             if event.key == K_DOWN or event.key == ord('s'):
                 direction = 'down'
-            if event.key == K_ESCAPE:
+            if event.key == K_ESCAPE or event.key == ord('q'):
                 pygame.event.post(pygame.event.Event(QUIT)) # Quits game if esc is pressed
 
     move = game.direction_to_int(direction) # Translates key pressed to int
