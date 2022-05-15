@@ -141,7 +141,9 @@ def crash():
     current_game = Model(config.player_name, game.snake.score)
     db.session.add(current_game)
     db.session.commit()
-
+    
+    pygame.mixer.music.stop()
+    
     # Prints game over message on screen
     message_display('crashed', game.settings.width / 2 * 15, game.settings.height / 3 * 15, white)
     time.sleep(1)
@@ -160,6 +162,9 @@ def crash():
         time.sleep(2)
         
     screen.fill(white) # Background colour (correct this to appropriate background)
+    bg_img = pygame.image.load("logos/gamelogo.png")
+    screen.blit(bg_img, (0,0))
+    
 
 
 # Main menu - First function called by code
@@ -207,6 +212,14 @@ def game_loop(player, fps=10):
     config.game_over = 0
 
     # print(game.snake.segments) debug
+    
+    #pygame.mixer.init()
+    
+    MUSIC_END = pygame.USEREVENT+1
+    pygame.mixer.music.set_endevent(MUSIC_END)
+
+    pygame.mixer.music.load('sound/background_music.mp3')
+    pygame.mixer.music.play(-1)
 
     while not game.game_end() and not config.game_over:
         pygame.event.pump()
@@ -214,12 +227,12 @@ def game_loop(player, fps=10):
         move = human_move() # Receives input from user
         fps = config.fps # Determines how often the game is refreshed (speed of snake)
         
-
         current_segments = list(game.snake.segments)
         game.do_move(move, screen) # Converts raw user input to update snake
 
         screen.fill(black) # Background colour
         screen.blit(bg_img2, (0, 25))
+        
         
         # Modification - Snake head no longer disappears when player loses
         if not game.game_end():
