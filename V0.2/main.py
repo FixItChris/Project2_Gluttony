@@ -66,6 +66,7 @@ fpsClock = pygame.time.Clock()
 
 font_descript = pygame.font.SysFont("arial", 10, True)
 background = pygame.image.load('./logos/gamelogo.png')
+team_logo = pygame.image.load('./logos/team.png')
 
 # Sets display window size - Square - number of squares in grid * 15px
 screen = pygame.display.set_mode((game.settings.width * 15, game.settings.height * 15))
@@ -89,6 +90,18 @@ def kick_start(background, progress=0):
             pygame.draw.rect(screen, green, [0, 400, progress, 15])
         text = font_descript.render("Loading: " + str(int(progress)) + "%", True, black)
         screen.blit(text, [170, 402.5])
+        pygame.display.flip()
+        time.sleep(time_keep)
+
+
+def team_logo_display():
+    pygame.display.set_caption('Pygame: Loading - Gluttonous')
+    time_kept = 0
+    time_keep = 0.03
+    screen.fill(black)
+    while time_kept < 50:
+        time_kept += 1
+        screen.blit(team_logo, ((game.settings.width * 15 - team_logo.get_width())/2, (game.settings.height * 15 - team_logo.get_height() - 20)/2))
         pygame.display.flip()
         time.sleep(time_keep)
 
@@ -316,5 +329,6 @@ def human_move():
 
 # Main function - Entry point into program
 if __name__ == "__main__":
-    kick_start(background)
+    kick_start(background) # loading screen
+    team_logo_display() # loads logo
     initial_interface() # Loads main menu
