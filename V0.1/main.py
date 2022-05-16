@@ -47,15 +47,12 @@ rect_len = game.settings.rect_len # Width/height of square icons used during gam
 snake = game.snake # Defines snake class within game class for convienence later in the code
 
 # Initialises pygame and sets basic settings
-
 config.player_name = input("Before playing, please enter your name: ")
-
 pygame.init()
 fpsClock = pygame.time.Clock()
 
 # Sets display window size - Square - number of squares in grid * 15px
-# + 25 is the amount of pixels were extended for the score
-screen = pygame.display.set_mode((game.settings.width * 15, game.settings.height * 15 + 25))
+screen = pygame.display.set_mode((game.settings.width * 15, game.settings.height * 15))
 
 # Title of popup window
 pygame.display.set_caption('Gluttonous')
@@ -75,7 +72,6 @@ def text_objects(text, font, color=black):
 
 
 # Used to displays messages on screen in game
-
 def message_display(text, x, y, color=black, size=50):
     large_text = pygame.font.SysFont('comicsansms', size) # Specifies font and size to use
     text_surf, text_rect = text_objects(text, large_text, color) # Links to function above
@@ -111,16 +107,7 @@ def quitgame():
     pygame.quit()
     quit()
 
-# Displays the 'crash' screen when required
-def crash():
-    pygame.mixer.Sound.play(crash_sound) # Plays sound effect
-    # Prints game over message on screen
-    message_display('crashed', game.settings.width / 2 * 15, game.settings.height / 3 * 15, white)
-    time.sleep(1)
-    message_display('Game over!', game.settings.width / 2 * 15, game.settings.height / 1.75 * 15, red)
-    time.sleep(2)
-    
-# Modification - Leaderboard
+# Modification
 def get_pid():
     return random.randint(1e9, 1e10)
 
@@ -142,53 +129,34 @@ def crash():
     current_game = Model(config.player_name, game.snake.score)
     db.session.add(current_game)
     db.session.commit()
-    
-    pygame.mixer.music.stop()
-    
+
     # Prints game over message on screen
     message_display('crashed', game.settings.width / 2 * 15, game.settings.height / 3 * 15, white)
     time.sleep(1)
-    if config.has_potion:
-        config.has_potion = 0
-        config.new_life = 1
-        message_display('Potion Used', game.settings.width / 2 * 15, game.settings.height / 1.75 * 15, green)
-        time.sleep(2)
-        game_loop('human')
-
-    elif game.snake.score > high_score:
+    if game.snake.score > high_score:
         message_display('NEW HIGHSCORE!', game.settings.width / 2 * 15, game.settings.height / 1.75 * 15, green)
-        time.sleep(2)
     else:   
         message_display('Game over!', game.settings.width / 2 * 15, game.settings.height / 1.75 * 15, red)
-        time.sleep(2)
-        
-    screen.fill(white)
-    # loads and prints background of the main page
-    bg_img = pygame.image.load("logos/gamelogo.png")
-    screen.blit(bg_img, (0,0))
+    time.sleep(2)
+    screen.fill(white) # Background colour
+
 
 # Main menu - First function called by code
 def initial_interface():
-    config.new_life = 0
     intro = True
     screen.fill(white) # Background colour
-    
-    # loads and prints background of the main page
-    bg_img = pygame.image.load("logos/gamelogo.png")
-    screen.blit(bg_img, (0,0))
-        
     while intro:
         # Application is closed
         for event in pygame.event.get(): 
             if event.type == pygame.QUIT:
                 pygame.quit()
-                # Modification - Gracefully closes python program
+                # Modification - Gracefully closes python program if application is closed
                 quit() 
 
         message_display('Gluttonous', game.settings.width / 2 * 15, game.settings.height / 4 * 15) # Title
         
         high_score = db.session.query(func.max(Model.score)).scalar()
-        message_display('Highscore: ' + str(high_score), game.settings.width/2*15, \
+        message_display('Highscore: '+str(high_score), game.settings.width/2*15, \
                         game.settings.height /2.5*15, size=28)
 
         button('Play!', 80, 240, 80, 40, green, bright_green, game_loop, 'human') # Calls game_loop function
@@ -201,33 +169,21 @@ def initial_interface():
 # Gameplay Screen
 def game_loop(player, fps=10):
     game.restart_game()
-    
-    bg_img2 = pygame.image.load("images/background.png") # loads board background
-
-    if config.new_life:
-        config.new_life = 0
-
     pos_x = game.settings.width*15/2 - 45
     high_score = db.session.query(func.max(Model.score)).scalar()
-    config.fps = fps
-    config.game_over = 0
 
-    # print(game.snake.segments) debug
-    
-    pygame.mixer.music.load('sound/background_music.mp3') # loads the music
-    pygame.mixer.music.play(-1) # plays the music on repeat
+    while not game.game_end():
 
-    while not game.game_end() and not config.game_over:
         pygame.event.pump()
 
         move = human_move() # Receives input from user
-        fps = config.fps # Determines how often the game is refreshed (speed of snake)
+        fps = 5 # Determines how often the game is refreshed (speed of snake)
         
+
         current_segments = list(game.snake.segments)
-        game.do_move(move, screen) # Converts raw user input to update snake
-        screen.fill(black)
-        screen.blit(bg_img2, (0, 25)) # prints the new background in each draw call
-        
+        game.do_move(move) # Converts raw user input to update snake
+
+        screen.fill(black) # Background colour
         
         # Modification - Snake head no longer disappears when player loses
         if not game.game_end():
@@ -235,43 +191,44 @@ def game_loop(player, fps=10):
 
         else:
             # Snake is updated using old position
-            config.game_over = 1
             game.snake.segments = current_segments
             game.snake.blit(rect_len, screen)
+            game.strawberry.blit(screen)
+            game.blit_score(white, screen)
+            
+            if game.snake.score > high_score:
+                message = 'Highscore: '+ str(game.snake.score)
+                small_message(white, screen, message, pos_x, 5)
+            else:    
+                message = 'Highscore: '+ str(high_score)
+                small_message(white, screen, message, pos_x, 5)
         
         game.strawberry.blit(screen) # Draws/updates food
-        
-        if config.mushroom_out:
-            game.mushroom.blit(screen)
-
-        if config.super_fruit_out:
-            game.super_fruit.blit(screen)
-        
-        if config.potion_out:
-            game.potion.blit(screen)
-
-
         game.blit_score(white, screen) # Draws/updates user score
-        speed_message = 'Speed: ' + str(config.fps)
-        small_message(white, screen, speed_message, game.settings.width*15-85, 5)        
+        
         if game.snake.score > high_score:
-            message = 'Highscore: ' + str(game.snake.score)
+            message = 'Highscore: '+ str(game.snake.score)
             small_message(white, screen, message, pos_x, 5)
         else:    
-            message = 'Highscore: ' + str(high_score)
+            message = 'Highscore: '+ str(high_score)
             small_message(white, screen, message, pos_x, 5)
+
+
+
 
         # Refreshes/updates screen
         pygame.display.flip()
         fpsClock.tick(fps)
 
     crash() # Triggers crash sequence once game is finished
-    
+
 def small_message(color, screen, message, pos_x, pos_y):
     font = pygame.font.SysFont(None, 25)
     text_surf, text_rect = text_objects(message, font, color)
     text_rect.center = (pos_x, pos_y)
-    screen.blit(text_surf, (pos_x, pos_y)) # make sure this works
+    screen.blit(text_surf, (pos_x, pos_y))
+
+
 
 
 # Reads user input
