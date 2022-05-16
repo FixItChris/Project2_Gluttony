@@ -279,7 +279,8 @@ def game_loop(player, fps=10):
         
         current_segments = list(game.snake.segments)
         game.do_move(move, screen) # Converts raw user input to update snake
-
+        
+        screen.fill(black)
         screen.blit(bg_img2, (0, 25)) # prints the new background in each draw call
         
         
