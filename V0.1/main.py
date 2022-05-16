@@ -22,7 +22,6 @@ from sqlalchemy import func
 import config
 import random
 
-
 app = flask.Flask(__name__)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///snake.db'
@@ -35,7 +34,6 @@ white = pygame.Color(255, 255, 255)
 
 green = pygame.Color(0, 200, 0)
 bright_green = pygame.Color(0, 255, 0)
-load_green = pygame.Color(100, 255, 0)
 red = pygame.Color(200, 0, 0)
 bright_red = pygame.Color(255, 0, 0)
 blue = pygame.Color(32, 178, 170)
@@ -49,65 +47,15 @@ rect_len = game.settings.rect_len # Width/height of square icons used during gam
 snake = game.snake # Defines snake class within game class for convienence later in the code
 
 # Initialises pygame and sets basic settings
-
-#####Intro#####
-
-def import_and_install(package):
-    try:
-        return __import__(package)
-    except ImportError:
-        return None
-        
-import_and_install('numpy')
-import_and_install('pygame')
-
 config.player_name = input("Before playing, please enter your name: ")
 pygame.init()
 fpsClock = pygame.time.Clock()
 
-font_descript = pygame.font.SysFont("arial", 10, True)
-background = pygame.image.load('./logos/gamelogo.png')
-team_logo = pygame.image.load('./logos/team.png')
-
 # Sets display window size - Square - number of squares in grid * 15px
 screen = pygame.display.set_mode((game.settings.width * 15, game.settings.height * 15))
 
-def kick_start(background, progress=0):
-    pygame.display.set_caption('Pygame: Loading - Gluttonous')
-    font_descript = pygame.font.SysFont("arial", 10, True)
-    while (progress/2) < 100:
-        time_keep = 0.003
-        time_increase = 1
-        progress += time_increase
-        
-        screen.fill(white)
-        screen.blit(background, (-80, 10))
-        if progress > 100:
-            time.sleep(1)
-            break
-        if (progress/2) > 30:
-            pygame.draw.rect(screen, green, [0, 400, 420, 15])
-        else:
-            pygame.draw.rect(screen, green, [0, 400, progress, 15])
-        text = font_descript.render("Loading: " + str(int(progress)) + "%", True, black)
-        screen.blit(text, [170, 402.5])
-        pygame.display.flip()
-        time.sleep(time_keep)
-
-
-def team_logo_display():
-    pygame.display.set_caption('Pygame: Loading - Gluttonous')
-    time_kept = 0
-    time_keep = 0.03
-    screen.fill(white)
-    while time_kept < 50:
-        time_kept += 1
-        screen.blit(team_logo, ((game.settings.width * 15 - team_logo.get_width())/2, (game.settings.height * 15 - team_logo.get_height() - 20)/2))
-        pygame.display.flip()
-        time.sleep(time_keep)
-
-################
-
+# Title of popup window
+pygame.display.set_caption('Gluttonous')
 
 # Modification - Adding application icon
 pygame_icon = pygame.image.load('./logos/application.png')
@@ -159,7 +107,7 @@ def quitgame():
     pygame.quit()
     quit()
 
-# Modification - Leaderboard
+# Modification
 def get_pid():
     return random.randint(1e9, 1e10)
 
@@ -185,28 +133,16 @@ def crash():
     # Prints game over message on screen
     message_display('crashed', game.settings.width / 2 * 15, game.settings.height / 3 * 15, white)
     time.sleep(1)
-    if config.has_potion:
-        config.has_potion = 0
-        config.new_life = 1
-        message_display('Potion Used', game.settings.width / 2 * 15, game.settings.height / 1.75 * 15, green)
-        time.sleep(2)
-        game_loop('human')
-
-    elif game.snake.score > high_score:
+    if game.snake.score > high_score:
         message_display('NEW HIGHSCORE!', game.settings.width / 2 * 15, game.settings.height / 1.75 * 15, green)
-        time.sleep(2)
     else:   
         message_display('Game over!', game.settings.width / 2 * 15, game.settings.height / 1.75 * 15, red)
-        time.sleep(2)
+    time.sleep(2)
     screen.fill(white) # Background colour
 
 
 # Main menu - First function called by code
 def initial_interface():
-    # Title of popup window
-    pygame.display.set_caption('Gluttonous')
-    
-    config.new_life = 0
     intro = True
     screen.fill(white) # Background colour
     while intro:
@@ -214,13 +150,13 @@ def initial_interface():
         for event in pygame.event.get(): 
             if event.type == pygame.QUIT:
                 pygame.quit()
-                # Modification - Gracefully closes python program
+                # Modification - Gracefully closes python program if application is closed
                 quit() 
 
         message_display('Gluttonous', game.settings.width / 2 * 15, game.settings.height / 4 * 15) # Title
         
         high_score = db.session.query(func.max(Model.score)).scalar()
-        message_display('Highscore: ' + str(high_score), game.settings.width/2*15, \
+        message_display('Highscore: '+str(high_score), game.settings.width/2*15, \
                         game.settings.height /2.5*15, size=28)
 
         button('Play!', 80, 240, 80, 40, green, bright_green, game_loop, 'human') # Calls game_loop function
@@ -233,24 +169,19 @@ def initial_interface():
 # Gameplay Screen
 def game_loop(player, fps=10):
     game.restart_game()
-    if config.new_life:
-        config.new_life = 0
-
     pos_x = game.settings.width*15/2 - 45
     high_score = db.session.query(func.max(Model.score)).scalar()
-    config.fps = fps
-    config.game_over = 0
 
+    while not game.game_end():
 
-    while not game.game_end() and not config.game_over:
         pygame.event.pump()
 
         move = human_move() # Receives input from user
-        fps = config.fps # Determines how often the game is refreshed (speed of snake)
+        fps = 5 # Determines how often the game is refreshed (speed of snake)
         
 
         current_segments = list(game.snake.segments)
-        game.do_move(move, screen) # Converts raw user input to update snake
+        game.do_move(move) # Converts raw user input to update snake
 
         screen.fill(black) # Background colour
         
@@ -260,30 +191,26 @@ def game_loop(player, fps=10):
 
         else:
             # Snake is updated using old position
-            config.game_over = 1
             game.snake.segments = current_segments
             game.snake.blit(rect_len, screen)
+            game.strawberry.blit(screen)
+            game.blit_score(white, screen)
+            
+            if game.snake.score > high_score:
+                message = 'Highscore: '+ str(game.snake.score)
+                small_message(white, screen, message, pos_x, 5)
+            else:    
+                message = 'Highscore: '+ str(high_score)
+                small_message(white, screen, message, pos_x, 5)
         
         game.strawberry.blit(screen) # Draws/updates food
-        
-        if config.mushroom_out:
-            game.mushroom.blit(screen)
-
-        if config.super_fruit_out:
-            game.super_fruit.blit(screen)
-        
-        if config.potion_out:
-            game.potion.blit(screen)
-
-
         game.blit_score(white, screen) # Draws/updates user score
-        speed_message = 'Speed: ' + str(config.fps)
-        small_message(white, screen, speed_message, game.settings.width*15-85, 5)        
+        
         if game.snake.score > high_score:
-            message = 'Highscore: ' + str(game.snake.score)
+            message = 'Highscore: '+ str(game.snake.score)
             small_message(white, screen, message, pos_x, 5)
         else:    
-            message = 'Highscore: ' + str(high_score)
+            message = 'Highscore: '+ str(high_score)
             small_message(white, screen, message, pos_x, 5)
 
 
@@ -322,7 +249,7 @@ def human_move():
                 direction = 'up'
             if event.key == K_DOWN or event.key == ord('s'):
                 direction = 'down'
-            if event.key == K_ESCAPE or event.key == ord('q'):
+            if event.key == K_ESCAPE:
                 pygame.event.post(pygame.event.Event(QUIT)) # Quits game if esc is pressed
 
     move = game.direction_to_int(direction) # Translates key pressed to int
@@ -330,6 +257,4 @@ def human_move():
 
 # Main function - Entry point into program
 if __name__ == "__main__":
-    kick_start(background) # loading screen
-    team_logo_display() # loads logo
     initial_interface() # Loads main menu
