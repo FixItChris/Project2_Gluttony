@@ -72,6 +72,10 @@ team_logo = pygame.image.load('./logos/team.png')
 screen = pygame.display.set_mode((game.settings.width * 15, game.settings.height * 15 + 25))
 
 def kick_start(background, progress=0):
+    current_game = Model(config.player_name, 0)
+    db.session.add(current_game)
+    db.session.commit()
+    
     pygame.display.set_caption('Pygame: Loading - Gluttonous')
     font_descript = pygame.font.SysFont("arial", 10, True)
     while (progress/2) < 100:
@@ -244,7 +248,7 @@ def initial_interface():
                         game.settings.height /2.5*15, size=28)
         message_display('Welcome ' + str(config.player_name) + '!', game.settings.width/2*15, \
                         game.settings.height /3.15*15, size=28)
-
+        
         button('Play!', 80, 240, 80, 40, green, bright_green, game_loop, 'human') # Calls game_loop function
         button('Quit', 270, 240, 80, 40, red, bright_red, quitgame) # Calls quitgame function
         button('About', 270, 300, 80, 40, blue, bright_blue, about_page)
@@ -254,6 +258,7 @@ def initial_interface():
             button('Highscores', 80, 360, 80, 40, green, bright_green, view_hs)
         else:
             button('Highscores', 80, 360, 80, 40, grey, grey)
+        
         button('Against AI', 80, 300, 80, 40, green, bright_green, ai_page)
 
         pygame.display.update() # Refresh screen (Bug - while loop causes flickering of buttons)
@@ -328,7 +333,7 @@ def help_page():
         else:
             link_colour = (0, 0, 0)
         pygame.display.update()
-        pygame.time.Clock().tick()
+        pygame.time.Clock().tick()    
 
 
 # Gameplay Screen
