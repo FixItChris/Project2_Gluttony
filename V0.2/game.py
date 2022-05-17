@@ -8,11 +8,12 @@ import config
 pygame.init() # Initialise pygame module
 
 # Modification - Added sound effect for eating food
-point_collect = pygame.mixer.Sound('./sound/point_collect.wav')
+point_collect = pygame.mixer.Sound('./sound/eating_regular_fruit.mp3')
 mushroom_fast = pygame.mixer.Sound('./sound/fast_mushroom.mp3')
 mushroom_slow = pygame.mixer.Sound('./sound/slow_mushroom.mp3')
 super_sound = pygame.mixer.Sound('./sound/super_fruit.mp3')
 potion_sound = pygame.mixer.Sound('./sound/potion.mp3')
+crash_into_sound = pygame.mixer.Sound('./sound/crashes_into_itself.mp3')
 
 # Defines properties of the screen
 class Settings:
@@ -327,6 +328,7 @@ class Game:
             end = True
         # Crashes into itself
         if self.snake.segments[0] in self.snake.segments[1:]: 
+            crash_into_sound.play()
             end = True
 
         return end
