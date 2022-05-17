@@ -261,7 +261,10 @@ def game_loop(player, fps=10):
     config.game_over = 0
     
     bg_img2 = pygame.image.load('images/background.png')
-
+    
+    pygame.mixer.music.load('./sound/background.mp3')
+    pygame.mixer.music.play(-1)
+    
     while not game.game_end() and not config.game_over:
         pygame.event.pump()
 
