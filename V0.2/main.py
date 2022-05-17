@@ -110,7 +110,7 @@ def button(msg, x, y, w, h, inactive_color, active_color, action=None, parameter
 def quitgame():
     pygame.quit()
     quit()
-
+"""
 # Displays the 'crash' screen when required
 def crash():
     pygame.mixer.Sound.play(crash_sound) # Plays sound effect
@@ -119,7 +119,7 @@ def crash():
     time.sleep(1)
     message_display('Game over!', game.settings.width / 2 * 15, game.settings.height / 1.75 * 15, red)
     time.sleep(2)
-    
+"""
 # Modification - Leaderboard
 def get_pid():
     return random.randint(1e9, 1e10)
@@ -151,6 +151,7 @@ def crash():
     if config.has_potion:
         config.has_potion = 0
         config.new_life = 1
+        
         message_display('Potion Used', game.settings.width / 2 * 15, game.settings.height / 1.75 * 15, green)
         time.sleep(2)
         game_loop('human')
@@ -225,6 +226,7 @@ def game_loop(player, fps=10):
         
         current_segments = list(game.snake.segments)
         game.do_move(move, screen) # Converts raw user input to update snake
+        
         screen.fill(black)
         screen.blit(bg_img2, (0, 25)) # prints the new background in each draw call
         
