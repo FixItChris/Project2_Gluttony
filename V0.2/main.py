@@ -11,6 +11,7 @@ import pygame
 import time
 from pygame.locals import KEYDOWN, K_RIGHT, K_LEFT, K_UP, K_DOWN, K_ESCAPE
 from pygame.locals import QUIT
+import webbrowser
 
 # Imports Game class defined in 'game.py' which contains Settings, Snake and Strawberry classes
 from game import Game
@@ -241,11 +242,92 @@ def initial_interface():
         high_score = db.session.query(func.max(Model.score)).scalar()
         message_display('Highscore: ' + str(high_score), game.settings.width/2*15, \
                         game.settings.height /2.5*15, size=28)
+        message_display('Welcome ' + str(config.player_name) + '!', game.settings.width/2*15, \
+                        game.settings.height /3.15*15, size=28)
 
         button('Play!', 80, 240, 80, 40, green, bright_green, game_loop, 'human') # Calls game_loop function
         button('Quit', 270, 240, 80, 40, red, bright_red, quitgame) # Calls quitgame function
+        button('About', 270, 300, 80, 40, blue, bright_blue, about_page)
+        button('Help', 270, 360, 80, 40, blue, bright_blue, help_page)
+
+        if db.session.query(func.max(Model.score)).scalar() > 0:
+            button('Highscores', 80, 360, 80, 40, green, bright_green, view_hs)
+        else:
+            button('Highscores', 80, 360, 80, 40, grey, grey)
+        button('Against AI', 80, 300, 80, 40, green, bright_green, ai_page)
 
         pygame.display.update() # Refresh screen (Bug - while loop causes flickering of buttons)
+        pygame.time.Clock().tick()
+
+
+def ai_page():
+    pygame.display.set_caption('Gluttonous: Play against AI')
+    about = True
+    screen.fill(black)
+    font_descri = pygame.font.SysFont("comicsansms", 30, True)
+    while about:
+        for event in pygame.event.get(): 
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit() 
+        button('Back', 10, 10, 80, 40, blue, bright_blue, initial_interface)
+        screen.blit(font_descri.render("Coming Soon! Please wait", True, white), (50, 50))
+        screen.blit(font_descri.render("for further updates...", True, white), (50, 80))
+        pygame.display.update()
+        pygame.time.Clock().tick()    
+
+def view_hs():
+    pygame.display.set_caption('Gluttonous: About')
+    about = True
+    screen.fill(white)
+    while about:
+        for event in pygame.event.get(): 
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit() 
+        button('Back', 10, 10, 80, 40, blue, bright_blue, initial_interface)
+        pygame.display.update()
+        pygame.time.Clock().tick()
+
+def about_page():
+    pygame.display.set_caption('Gluttonous: About')
+    about = True
+    screen.fill(white)
+    while about:
+        for event in pygame.event.get(): 
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()        
+        button('Back', 10, 10, 80, 40, blue, bright_blue, initial_interface)     
+        pygame.display.update()
+        pygame.time.Clock().tick()
+
+def help_page():
+    pygame.display.set_caption('Gluttonous: About')
+    about = True
+    screen.fill(white)
+    link_font = pygame.font.SysFont('arial', 20)
+    link_colour = (0, 0, 0)
+    while about:
+        button('BACK', 10, 10, 80, 40, blue, bright_blue, initial_interface)
+        screen.blit(link_font.render("Please refer to the Game Manual.", True, black), (60, 60))
+        game_man = screen.blit(link_font.render("-->>GAME MANUAL<<--", True, link_colour), (100, 100))
+        for event in pygame.event.get(): 
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+            
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                pos = event.pos
+
+                if game_man.collidepoint(pos):
+                    webbrowser.open(r"https://unisydneyedu-my.sharepoint.com/:w:/g/personal/papi6478_uni_sydney_edu_au/ESYE-a_WioVHgp-a3wCSaE8BqqFfgpXydRC51VgMUjDDgA?e=tYVzUb")
+            
+        if game_man.collidepoint(pygame.mouse.get_pos()):
+            link_colour = (70, 29, 219)
+        else:
+            link_colour = (0, 0, 0)
+        pygame.display.update()
         pygame.time.Clock().tick()
 
 
