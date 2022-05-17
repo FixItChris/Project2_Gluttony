@@ -98,7 +98,7 @@ def team_logo_display():
     pygame.display.set_caption('Pygame: Loading - Gluttonous')
     time_kept = 0
     time_keep = 0.03
-    screen.fill(black)
+    screen.fill(white)
     while time_kept < 50:
         time_kept += 1
         screen.blit(team_logo, ((game.settings.width * 15 - team_logo.get_width())/2, (game.settings.height * 15 - team_logo.get_height() - 20)/2))
@@ -187,6 +187,7 @@ def crash():
     if config.has_potion:
         config.has_potion = 0
         config.new_life = 1
+        
         message_display('Potion Used', game.settings.width / 2 * 15, game.settings.height / 1.75 * 15, green)
         time.sleep(2)
         game_loop('human')
@@ -250,8 +251,9 @@ def game_loop(player, fps=10):
 
         current_segments = list(game.snake.segments)
         game.do_move(move, screen) # Converts raw user input to update snake
-
-        screen.fill(black) # Background colour
+        
+        screen.fill(black)
+        screen.blit(bg_img2, (0, 25)) # prints the new background in each draw call
         
         # Modification - Snake head no longer disappears when player loses
         if not game.game_end():
@@ -321,7 +323,7 @@ def human_move():
                 direction = 'up'
             if event.key == K_DOWN or event.key == ord('s'):
                 direction = 'down'
-            if event.key == K_ESCAPE:
+            if event.key == K_ESCAPE or event.key == ord('q'):
                 pygame.event.post(pygame.event.Event(QUIT)) # Quits game if esc is pressed
 
     move = game.direction_to_int(direction) # Translates key pressed to int
