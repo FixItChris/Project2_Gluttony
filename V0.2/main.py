@@ -11,6 +11,7 @@ import pygame
 import time
 from pygame.locals import KEYDOWN, K_RIGHT, K_LEFT, K_UP, K_DOWN, K_ESCAPE
 from pygame.locals import QUIT
+import webbrowser
 
 # Imports Game class defined in 'game.py' which contains Settings, Snake and Strawberry classes
 from game import Game
@@ -48,6 +49,8 @@ game = Game()
 rect_len = game.settings.rect_len # Width/height of square icons used during gameplay (in px)
 snake = game.snake # Defines snake class within game class for convienence later in the code
 
+# Initialises pygame and sets basic settings
+
 #####Intro#####
 
 def import_and_install(package):
@@ -55,7 +58,7 @@ def import_and_install(package):
         return __import__(package)
     except ImportError:
         return None
-
+        
 import_and_install('numpy')
 import_and_install('pygame')
 
@@ -68,7 +71,7 @@ background = pygame.image.load('./logos/gamelogo.png')
 team_logo = pygame.image.load('./logos/team.png')
 
 # Sets display window size - Square - number of squares in grid * 15px
-screen = pygame.display.set_mode((game.settings.width * 15, game.settings.height * 15 + 25))
+screen = pygame.display.set_mode((game.settings.width * 15, game.settings.height * 15))
 
 def kick_start(background, progress=0):
     pygame.display.set_caption('Pygame: Loading - Gluttonous')
@@ -78,11 +81,6 @@ def kick_start(background, progress=0):
         time_increase = 1
         progress += time_increase
         
-        for event in pygame.event.get(): 
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                quit()
-
         screen.fill(white)
         screen.blit(background, (-80, 10))
         if progress > 100:
@@ -108,13 +106,6 @@ def team_logo_display():
         screen.blit(team_logo, ((game.settings.width * 15 - team_logo.get_width())/2, (game.settings.height * 15 - team_logo.get_height() - 20)/2))
         pygame.display.flip()
         time.sleep(time_keep)
-        for event in pygame.event.get(): 
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                quit()
-
-
-
 
 ################
 
@@ -186,9 +177,6 @@ class Model(db.Model):
 # Displays the 'crash' screen when required
 def crash():
     pygame.mixer.Sound.play(crash_sound) # Plays sound effect
-    
-    pygame.mixer.music.stop()
-    
     high_score = db.session.query(func.max(Model.score)).scalar()
     
     current_game = Model(config.player_name, game.snake.score)
@@ -201,7 +189,6 @@ def crash():
     if config.has_potion:
         config.has_potion = 0
         config.new_life = 1
-        
         message_display('Potion Used', game.settings.width / 2 * 15, game.settings.height / 1.75 * 15, green)
         time.sleep(2)
         game_loop('human')
@@ -212,11 +199,7 @@ def crash():
     else:   
         message_display('Game over!', game.settings.width / 2 * 15, game.settings.height / 1.75 * 15, red)
         time.sleep(2)
-    
-    screen.fill(white)
-    # loads and prints background of the main page
-    bg_img = pygame.image.load("logos/gamelogo.png")
-    screen.blit(bg_img, (0,0))
+    screen.fill(white) # Background colour
 
 
 # Main menu - First function called by code
@@ -226,8 +209,8 @@ def initial_interface():
     
     config.new_life = 0
     intro = True
-    bg_img = pygame.image.load("logos/gamelogo.png")
-    screen.blit(bg_img, (0,0))
+    grey = (128, 128, 128)
+    screen.fill(white) # Background colour
     while intro:
         # Application is closed
         for event in pygame.event.get(): 
@@ -236,17 +219,96 @@ def initial_interface():
                 # Modification - Gracefully closes python program
                 quit() 
 
-        message_display('Gluttonous', game.settings.width / 2 * 15, game.settings.height / 4 * 15) # Title
+        message_display('Gluttonous', game.settings.width / 2 * 15, game.settings.height / 6 * 15) # Title
         
         high_score = db.session.query(func.max(Model.score)).scalar()
         message_display('Highscore: ' + str(high_score), game.settings.width/2*15, \
                         game.settings.height /2.5*15, size=28)
-
+        message_display('Welcome ' + str(config.player_name).upper() + '!', game.settings.width/2*15, \
+                        game.settings.height /3.15*15, size=28)
         button('Play!', 80, 240, 80, 40, green, bright_green, game_loop, 'human') # Calls game_loop function
         button('Quit', 270, 240, 80, 40, red, bright_red, quitgame) # Calls quitgame function
+        button('About', 270, 300, 80, 40, blue, bright_blue, about_page)
+        button('Help', 270, 360, 80, 40, blue, bright_blue, help_page)
+        if db.session.query(func.max(Model.score)).scalar() > 0:
+            button('Highscores', 80, 360, 80, 40, green, red, view_hs)
+        else:
+            button('Highscores', 80, 360, 80, 40, grey, grey, view_hs)
+        button('Against AI', 80, 300, 80, 40, green, bright_green, ai_page)
 
-        pygame.display.update() # Refresh screen (Bug - while loop causes flickering of buttons)
+        pygame.display.update() # Refresh screen
         pygame.time.Clock().tick()
+
+
+def ai_page():
+    pygame.display.set_caption('Gluttonous: Play against AI')
+    about = True
+    screen.fill(black)
+    font_descri = pygame.font.SysFont("comicsansms", 30, True)
+    while about:
+        for event in pygame.event.get(): 
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit() 
+        button('Back', 10, 10, 80, 40, blue, bright_blue, initial_interface)
+        screen.blit(font_descri.render("Coming Soon! Please wait", True, white), (50, 50))
+        screen.blit(font_descri.render("for further updates...", True, white), (50, 80))
+        pygame.display.update()
+        pygame.time.Clock().tick()    
+
+def view_hs():
+    pygame.display.set_caption('Gluttonous: About')
+    about = True
+    screen.fill(white)
+    while about:
+        for event in pygame.event.get(): 
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit() 
+        button('Back', 10, 10, 80, 40, blue, bright_blue, initial_interface)
+        pygame.display.update()
+        pygame.time.Clock().tick()
+
+def about_page():
+    pygame.display.set_caption('Gluttonous: About')
+    about = True
+    screen.fill(white)
+    while about:
+        for event in pygame.event.get(): 
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()        
+        button('Back', 10, 10, 80, 40, blue, bright_blue, initial_interface)     
+        pygame.display.update()
+        pygame.time.Clock().tick()
+
+def help_page():
+    pygame.display.set_caption('Gluttonous: About')
+    about = True
+    screen.fill(white)
+    link_font = pygame.font.SysFont('arial', 20)
+    link_colour = (0, 0, 0)
+    while about:
+        button('BACK', 10, 10, 80, 40, blue, bright_blue, initial_interface)
+        screen.blit(link_font.render("Please refer to the Game Manual.", True, black), (60, 60))
+        game_man = screen.blit(link_font.render("-->>GAME MANUAL<<--", True, link_colour), (100, 100))
+        for event in pygame.event.get(): 
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+            
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                pos = event.pos
+
+                if game_man.collidepoint(pos):
+                    webbrowser.open(r"https://unisydneyedu-my.sharepoint.com/:w:/g/personal/papi6478_uni_sydney_edu_au/ESYE-a_WioVHgp-a3wCSaE8BqqFfgpXydRC51VgMUjDDgA?e=tYVzUb")
+            
+        if game_man.collidepoint(pygame.mouse.get_pos()):
+            link_colour = (70, 29, 219)
+        else:
+            link_colour = (0, 0, 0)
+        pygame.display.update()
+        pygame.time.Clock().tick()    
 
 
 # Gameplay Screen
@@ -259,8 +321,7 @@ def game_loop(player, fps=10):
     high_score = db.session.query(func.max(Model.score)).scalar()
     config.fps = fps
     config.game_over = 0
-    
-    bg_img2 = pygame.image.load('images/background.png')
+
 
     while not game.game_end() and not config.game_over:
         pygame.event.pump()
@@ -271,9 +332,8 @@ def game_loop(player, fps=10):
 
         current_segments = list(game.snake.segments)
         game.do_move(move, screen) # Converts raw user input to update snake
-        
-        screen.fill(black)
-        screen.blit(bg_img2, (0, 25)) # prints the new background in each draw call
+
+        screen.fill(black) # Background colour
         
         # Modification - Snake head no longer disappears when player loses
         if not game.game_end():
