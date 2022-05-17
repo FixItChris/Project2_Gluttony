@@ -79,6 +79,11 @@ def kick_start(background, progress=0):
         time_increase = 1
         progress += time_increase
         
+        for event in pygame.event.get(): 
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+
         screen.fill(white)
         screen.blit(background, (-80, 10))
         if progress > 100:
@@ -104,6 +109,13 @@ def team_logo_display():
         screen.blit(team_logo, ((game.settings.width * 15 - team_logo.get_width())/2, (game.settings.height * 15 - team_logo.get_height() - 20)/2))
         pygame.display.flip()
         time.sleep(time_keep)
+        for event in pygame.event.get(): 
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+
+
+
 
 ################
 
