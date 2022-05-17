@@ -49,8 +49,6 @@ game = Game()
 rect_len = game.settings.rect_len # Width/height of square icons used during gameplay (in px)
 snake = game.snake # Defines snake class within game class for convienence later in the code
 
-# Initialises pygame and sets basic settings
-
 #####Intro#####
 
 def import_and_install(package):
@@ -58,7 +56,7 @@ def import_and_install(package):
         return __import__(package)
     except ImportError:
         return None
-        
+
 import_and_install('numpy')
 import_and_install('pygame')
 
@@ -71,7 +69,7 @@ background = pygame.image.load('./logos/gamelogo.png')
 team_logo = pygame.image.load('./logos/team.png')
 
 # Sets display window size - Square - number of squares in grid * 15px
-screen = pygame.display.set_mode((game.settings.width * 15, game.settings.height * 15))
+screen = pygame.display.set_mode((game.settings.width * 15, game.settings.height * 15 + 25))
 
 def kick_start(background, progress=0):
     current_game = Model(config.player_name, 0)
@@ -85,6 +83,11 @@ def kick_start(background, progress=0):
         time_increase = 1
         progress += time_increase
         
+        for event in pygame.event.get(): 
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+
         screen.fill(white)
         screen.blit(background, (-80, 10))
         if progress > 100:
@@ -110,6 +113,13 @@ def team_logo_display():
         screen.blit(team_logo, ((game.settings.width * 15 - team_logo.get_width())/2, (game.settings.height * 15 - team_logo.get_height() - 20)/2))
         pygame.display.flip()
         time.sleep(time_keep)
+        for event in pygame.event.get(): 
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+
+
+
 
 ################
 
@@ -181,6 +191,9 @@ class Model(db.Model):
 # Displays the 'crash' screen when required
 def crash():
     pygame.mixer.Sound.play(crash_sound) # Plays sound effect
+    
+    pygame.mixer.music.stop()
+    
     high_score = db.session.query(func.max(Model.score)).scalar()
     
     current_game = Model(config.player_name, game.snake.score)
@@ -193,6 +206,7 @@ def crash():
     if config.has_potion:
         config.has_potion = 0
         config.new_life = 1
+        
         message_display('Potion Used', game.settings.width / 2 * 15, game.settings.height / 1.75 * 15, green)
         time.sleep(2)
         game_loop('human')
@@ -203,7 +217,11 @@ def crash():
     else:   
         message_display('Game over!', game.settings.width / 2 * 15, game.settings.height / 1.75 * 15, red)
         time.sleep(2)
-    screen.fill(white) # Background colour
+    
+    screen.fill(white)
+    # loads and prints background of the main page
+    bg_img = pygame.image.load("logos/gamelogo.png")
+    screen.blit(bg_img, (0,0))
 
 
 # Main menu - First function called by code
@@ -213,7 +231,8 @@ def initial_interface():
     
     config.new_life = 0
     intro = True
-    screen.fill(white) # Background colour
+    bg_img = pygame.image.load("logos/gamelogo.png")
+    screen.blit(bg_img, (0,0))
     while intro:
         # Application is closed
         for event in pygame.event.get(): 
@@ -236,11 +255,11 @@ def initial_interface():
         button('Help', 270, 360, 80, 40, blue, bright_blue, help_page)
 
         if db.session.query(func.max(Model.score)).scalar() > 0:
-            button('Highscores', 80, 360, 80, 40, green, red, view_hs)
+            button('Highscores', 80, 360, 80, 40, green, bright_green, view_hs)
         else:
-            button('Highscores', 80, 360, 80, 40, grey, grey, view_hs)
+            button('Highscores', 80, 360, 80, 40, grey, grey)
+        
         button('Against AI', 80, 300, 80, 40, green, bright_green, ai_page)
-
 
         pygame.display.update() # Refresh screen (Bug - while loop causes flickering of buttons)
         pygame.time.Clock().tick()
@@ -317,7 +336,6 @@ def help_page():
         pygame.time.Clock().tick()    
 
 
-
 # Gameplay Screen
 def game_loop(player, fps=10):
     game.restart_game()
@@ -328,8 +346,12 @@ def game_loop(player, fps=10):
     high_score = db.session.query(func.max(Model.score)).scalar()
     config.fps = fps
     config.game_over = 0
-
-
+    
+    bg_img2 = pygame.image.load('images/background.png')
+    
+    pygame.mixer.music.load('./sound/background.mp3')
+    pygame.mixer.music.play(-1)
+    
     while not game.game_end() and not config.game_over:
         pygame.event.pump()
 
@@ -339,8 +361,9 @@ def game_loop(player, fps=10):
 
         current_segments = list(game.snake.segments)
         game.do_move(move, screen) # Converts raw user input to update snake
-
-        screen.fill(black) # Background colour
+        
+        screen.fill(black)
+        screen.blit(bg_img2, (0, 25)) # prints the new background in each draw call
         
         # Modification - Snake head no longer disappears when player loses
         if not game.game_end():
