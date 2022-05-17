@@ -130,14 +130,14 @@ class Strawberry():
         
         # Randomly selects image of food to display on screen
         self.style = str(random.randint(1, 8))
-        self.image = pygame.image.load('images/food' + str(self.style) + '.bmp')
+        self.image = pygame.image.load('images/fruit.png')
         self.initialize() # Sets initial position of strawberry
     
     # Defines random position to place new strawberry
     def random_pos(self, snake):
         # Randomly selects image of food to display on screen
         self.style = str(random.randint(1, 8))
-        self.image = pygame.image.load('images/food' + str(self.style) + '.bmp')                
+        self.image = pygame.image.load('images/fruit.png')
 
         # Randomly selects position of food on board
         self.position[0] = random.randint(0, self.settings.width-1)
@@ -170,7 +170,7 @@ class Mushroom(Strawberry):
 class Super_Fruit(Strawberry):
     def __init__(self, settings):
         super().__init__(settings)
-        self.image = pygame.image.load('images/stone.png') # REPLACE
+        self.image = pygame.image.load('images/super_fruit.png') # REPLACE
     
     def random_pos(self, snake):
         self.position[0] = random.randint(0, self.settings.width-1)

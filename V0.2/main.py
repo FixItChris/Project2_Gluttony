@@ -70,7 +70,7 @@ background = pygame.image.load('./logos/gamelogo.png')
 team_logo = pygame.image.load('./logos/team.png')
 
 # Sets display window size - Square - number of squares in grid * 15px
-screen = pygame.display.set_mode((game.settings.width * 15, game.settings.height * 15))
+screen = pygame.display.set_mode((game.settings.width * 15, game.settings.height * 15 + 25))
 
 def kick_start(background, progress=0):
     pygame.display.set_caption('Pygame: Loading - Gluttonous')
@@ -241,7 +241,8 @@ def game_loop(player, fps=10):
     high_score = db.session.query(func.max(Model.score)).scalar()
     config.fps = fps
     config.game_over = 0
-
+    
+    bg_img2 = pygame.image.load('images/background.png')
 
     while not game.game_end() and not config.game_over:
         pygame.event.pump()
