@@ -48,7 +48,6 @@ game = Game()
 rect_len = game.settings.rect_len # Width/height of square icons used during gameplay (in px)
 snake = game.snake # Defines snake class within game class for convienence later in the code
 
-
 #####Intro#####
 
 def import_and_install(package):
@@ -56,7 +55,7 @@ def import_and_install(package):
         return __import__(package)
     except ImportError:
         return None
-        
+
 import_and_install('numpy')
 import_and_install('pygame')
 
@@ -187,6 +186,9 @@ class Model(db.Model):
 # Displays the 'crash' screen when required
 def crash():
     pygame.mixer.Sound.play(crash_sound) # Plays sound effect
+    
+    pygame.mixer.music.stop()
+    
     high_score = db.session.query(func.max(Model.score)).scalar()
     
     current_game = Model(config.player_name, game.snake.score)
@@ -210,7 +212,11 @@ def crash():
     else:   
         message_display('Game over!', game.settings.width / 2 * 15, game.settings.height / 1.75 * 15, red)
         time.sleep(2)
-    screen.fill(white) # Background colour
+    
+    screen.fill(white)
+    # loads and prints background of the main page
+    bg_img = pygame.image.load("logos/gamelogo.png")
+    screen.blit(bg_img, (0,0))
 
 
 # Main menu - First function called by code
@@ -220,7 +226,8 @@ def initial_interface():
     
     config.new_life = 0
     intro = True
-    screen.fill(white) # Background colour
+    bg_img = pygame.image.load("logos/gamelogo.png")
+    screen.blit(bg_img, (0,0))
     while intro:
         # Application is closed
         for event in pygame.event.get(): 
