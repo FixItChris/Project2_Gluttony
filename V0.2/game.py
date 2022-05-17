@@ -8,11 +8,12 @@ import config
 pygame.init() # Initialise pygame module
 
 # Modification - Added sound effect for eating food
-point_collect = pygame.mixer.Sound('./sound/point_collect.wav')
+point_collect = pygame.mixer.Sound('./sound/eating_regular_fruit.mp3')
 mushroom_fast = pygame.mixer.Sound('./sound/fast_mushroom.mp3')
 mushroom_slow = pygame.mixer.Sound('./sound/slow_mushroom.mp3')
 super_sound = pygame.mixer.Sound('./sound/super_fruit.mp3')
 potion_sound = pygame.mixer.Sound('./sound/potion.mp3')
+crash_into_sound = pygame.mixer.Sound('./sound/crashes_into_itself.mp3')
 
 # Defines properties of the screen
 class Settings:
@@ -96,14 +97,14 @@ class Snake:
     # Combines above 3 functions so that all components of the snake are moved
     def blit(self, rect_len, screen):
         # Updates head
-        self.blit_head(self.segments[0][0]*rect_len, self.segments[0][1]*rect_len, screen)                
+        self.blit_head(self.segments[0][0]*rect_len, self.segments[0][1]*rect_len+25, screen)                
         
         # Updates body
         for position in self.segments[1:-1]:
-            self.blit_body(position[0]*rect_len, position[1]*rect_len, screen)
+            self.blit_body(position[0]*rect_len, position[1]*rect_len+25, screen)
         
         # Updates tail
-        self.blit_tail(self.segments[-1][0]*rect_len, self.segments[-1][1]*rect_len, screen)                
+        self.blit_tail(self.segments[-1][0]*rect_len, self.segments[-1][1]*rect_len+25, screen)                
             
    
     # Updates position of snake's head by modifying position variable
@@ -128,15 +129,13 @@ class Strawberry():
         self.settings = settings # Stores settings from class given as input
         
         # Randomly selects image of food to display on screen
-        self.style = str(random.randint(1, 8))
-        self.image = pygame.image.load('images/food' + str(self.style) + '.bmp')
+        self.image = pygame.image.load('images/fruit.png')
         self.initialize() # Sets initial position of strawberry
     
     # Defines random position to place new strawberry
     def random_pos(self, snake):
         # Randomly selects image of food to display on screen
-        self.style = str(random.randint(1, 8))
-        self.image = pygame.image.load('images/food' + str(self.style) + '.bmp')                
+        self.image = pygame.image.load('images/fruit.png')
 
         # Randomly selects position of food on board
         self.position[0] = random.randint(0, self.settings.width-1)
@@ -147,7 +146,8 @@ class Strawberry():
 
     # Displays image of strawberry on screen
     def blit(self, screen):
-        screen.blit(self.image, [p * self.settings.rect_len for p in self.position])
+        rect_len = self.settings.rect_len
+        screen.blit(self.image, [self.position[0]*rect_len, self.position[1]*rect_len+25])
    
     # Sets first position of food
     def initialize(self):
@@ -169,7 +169,7 @@ class Mushroom(Strawberry):
 class Super_Fruit(Strawberry):
     def __init__(self, settings):
         super().__init__(settings)
-        self.image = pygame.image.load('images/stone.png') # REPLACE
+        self.image = pygame.image.load('images/super_fruit.png') # REPLACE
     
     def random_pos(self, snake):
         self.position[0] = random.randint(0, self.settings.width-1)
@@ -275,7 +275,7 @@ class Game:
                 self.super_fruit.random_pos(self.snake)
                 self.super_fruit.blit(screen)
             
-            elif rng <= 25 and not config.mushroom_out:
+            elif rng <= 25 and rng > 10 and not config.mushroom_out:
                 config.mushroom_out = 1
                 self.mushroom.random_pos(self.snake)
                 self.mushroom.blit(screen)
@@ -327,6 +327,7 @@ class Game:
             end = True
         # Crashes into itself
         if self.snake.segments[0] in self.snake.segments[1:]: 
+            crash_into_sound.play()
             end = True
 
         return end
