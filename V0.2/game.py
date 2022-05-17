@@ -97,14 +97,14 @@ class Snake:
     # Combines above 3 functions so that all components of the snake are moved
     def blit(self, rect_len, screen):
         # Updates head
-        self.blit_head(self.segments[0][0]*rect_len, self.segments[0][1]*rect_len, screen)                
+        self.blit_head(self.segments[0][0]*rect_len, self.segments[0][1]*rect_len+25, screen)                
         
         # Updates body
         for position in self.segments[1:-1]:
-            self.blit_body(position[0]*rect_len, position[1]*rect_len, screen)
+            self.blit_body(position[0]*rect_len, position[1]*rect_len+25, screen)
         
         # Updates tail
-        self.blit_tail(self.segments[-1][0]*rect_len, self.segments[-1][1]*rect_len, screen)                
+        self.blit_tail(self.segments[-1][0]*rect_len, self.segments[-1][1]*rect_len+25, screen)                
             
    
     # Updates position of snake's head by modifying position variable
@@ -129,14 +129,12 @@ class Strawberry():
         self.settings = settings # Stores settings from class given as input
         
         # Randomly selects image of food to display on screen
-        self.style = str(random.randint(1, 8))
         self.image = pygame.image.load('images/fruit.png')
         self.initialize() # Sets initial position of strawberry
     
     # Defines random position to place new strawberry
     def random_pos(self, snake):
         # Randomly selects image of food to display on screen
-        self.style = str(random.randint(1, 8))
         self.image = pygame.image.load('images/fruit.png')
 
         # Randomly selects position of food on board
@@ -148,7 +146,8 @@ class Strawberry():
 
     # Displays image of strawberry on screen
     def blit(self, screen):
-        screen.blit(self.image, [p * self.settings.rect_len for p in self.position])
+        rect_len = self.settings.rect_len
+        screen.blit(self.image, [self.position[0]*rect_len, self.position[1]*rect_len+25])
    
     # Sets first position of food
     def initialize(self):
