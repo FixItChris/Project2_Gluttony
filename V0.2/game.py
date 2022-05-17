@@ -74,21 +74,6 @@ class Snake:
     
     # Moves snake's tail component on screen
     def blit_tail(self, x, y, screen):
-        """
-        
-        # Determines which way tail needs to be facing
-        tail_direction = [self.segments[-2][i] - self.segments[-1][i] for i in range(2)] 
-        
-        # Checks which way tail needs to be facing after updating
-        if tail_direction == [0, -1]:
-            screen.blit(self.tail_up, (x, y))
-        elif tail_direction == [0, 1]:
-            screen.blit(self.tail_down, (x, y))  
-        elif tail_direction == [-1, 0]:
-            screen.blit(self.tail_left, (x, y))  
-        else:
-            screen.blit(self.tail_right, (x, y))
-    """
         j = 0
         while True:
             # Determines which way tail needs to be facing
@@ -108,19 +93,18 @@ class Snake:
                 screen.blit(self.tail_right, (x, y))
                 break
             j += 1
-            # end point
+    
     # Combines above 3 functions so that all components of the snake are moved
-    # + 25 offsets the boundary of the board so the player does not travel across the score
     def blit(self, rect_len, screen):
         # Updates head
-        self.blit_head(self.segments[0][0]*rect_len, self.segments[0][1]*rect_len + 25, screen)
+        self.blit_head(self.segments[0][0]*rect_len, self.segments[0][1]*rect_len, screen)                
         
         # Updates body
         for position in self.segments[1:-1]:
-            self.blit_body(position[0]*rect_len, position[1]*rect_len + 25, screen)
+            self.blit_body(position[0]*rect_len, position[1]*rect_len, screen)
         
         # Updates tail
-        self.blit_tail(self.segments[-1][0]*rect_len, self.segments[-1][1]*rect_len + 25, screen)
+        self.blit_tail(self.segments[-1][0]*rect_len, self.segments[-1][1]*rect_len, screen)                
             
    
     # Updates position of snake's head by modifying position variable
@@ -146,18 +130,15 @@ class Strawberry():
         
         # Randomly selects image of food to display on screen
         self.style = str(random.randint(1, 8))
-        self.image = pygame.image.load('images/main.png')
-        #self.image = pygame.image.load('images/food' + str(self.style) + '.bmp')
+        self.image = pygame.image.load('images/food' + str(self.style) + '.bmp')
         self.initialize() # Sets initial position of strawberry
     
     # Defines random position to place new strawberry
     def random_pos(self, snake):
         # Randomly selects image of food to display on screen
         self.style = str(random.randint(1, 8))
-        
-        self.image = pygame.image.load('images/main.png')
-        #self.image = pygame.image.load('images/mushroom' + str(self.style) + '.png')
-        
+        self.image = pygame.image.load('images/food' + str(self.style) + '.bmp')                
+
         # Randomly selects position of food on board
         self.position[0] = random.randint(0, self.settings.width-1)
         self.position[1] = random.randint(0, self.settings.height-1)
@@ -167,12 +148,12 @@ class Strawberry():
 
     # Displays image of strawberry on screen
     def blit(self, screen):
-        screen.blit(self.image, [self.position[0]*self.settings.rect_len, self.position[1]*self.settings.rect_len + 25])
+        screen.blit(self.image, [p * self.settings.rect_len for p in self.position])
    
     # Sets first position of food
     def initialize(self):
         self.position = [15, 10]
-        
+
 # Modification - Mushroom special food
 class Mushroom(Strawberry):
     def __init__(self, settings):
@@ -189,7 +170,7 @@ class Mushroom(Strawberry):
 class Super_Fruit(Strawberry):
     def __init__(self, settings):
         super().__init__(settings)
-        self.image = pygame.image.load('images/super_fruit.png') # REPLACE
+        self.image = pygame.image.load('images/stone.png') # REPLACE
     
     def random_pos(self, snake):
         self.position[0] = random.randint(0, self.settings.width-1)
@@ -201,7 +182,7 @@ class Super_Fruit(Strawberry):
 class Potion(Strawberry):
     def __init__(self, settings):
         super().__init__(settings)
-        self.image = pygame.image.load('images/potion.png')
+        self.image = pygame.image.load('images/snake_potion.png')
     
     def random_pos(self, snake):
         self.position[0] = random.randint(0, self.settings.width-1)
@@ -209,7 +190,7 @@ class Potion(Strawberry):
 
         if self.position in snake.segments:
             self.random_pos(snake)
-            
+ 
 
 # Initialises all other previous classes, and defines functions for user input/overall gameplay
 class Game:
@@ -237,7 +218,7 @@ class Game:
         config.mushroom_out = 0
         config.super_fruit_out = 0
         config.potion_out = 0
-        config.has_potion = 0
+        config.has_potion = 0 
     
     # Defines current state of the snake and strawberry during gameplay (CURRENTLY UNUSED)
     def current_state(self):         
@@ -260,7 +241,6 @@ class Game:
         return direction_dict[direction] # Returns integer representation
     
     # Implements main game logic - user input, if the snake consumes the food, if the game is finished
-    
     def do_move(self, move, screen):
         move_dict = self.move_dict
         
@@ -326,6 +306,7 @@ class Game:
             else:
                 config.fps -= 3
                 pygame.mixer.Sound.play(mushroom_slow)
+
         else:
             self.snake.segments.pop() # Removes last segment (tail) from snake so that it stays the same length
             reward = 0
@@ -343,7 +324,7 @@ class Game:
         if self.snake.position[0] >= self.settings.width or self.snake.position[0] < 0: 
             end = True
         # Crashes against top/bottom border   
-        if self.snake.position[1] >= self.settings.height or self.snake.position[1] < 0: # LUUG code
+        if self.snake.position[1] >= self.settings.height or self.snake.position[1] < 0: 
             end = True
         # Crashes into itself
         if self.snake.segments[0] in self.snake.segments[1:]: 
@@ -357,4 +338,6 @@ class Game:
         font = pygame.font.SysFont(None, 25) # Sets font
         text = font.render('Score: ' + str(self.snake.score), True, color) # Score text
         screen.blit(text, (5, 5)) # Shows score on screen, in top left corner
+
+
     
