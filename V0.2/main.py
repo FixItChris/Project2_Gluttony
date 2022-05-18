@@ -44,6 +44,12 @@ bright_blue = pygame.Color(32, 200, 200)
 yellow = pygame.Color(255, 205, 0)
 bright_yellow = pygame.Color(255, 255, 0)
 
+go_button = pygame.image.load('./logos/go_button.png')
+go_button_highlight = pygame.image.load('./logos/go_button_highlighted.png')
+
+quit_button = pygame.image.load('./logos/quit_button.png')
+quit_button_highlighted = pygame.image.load('./logos/quit_button_highlighted.png')
+
 # Initialises Game class (from game.py) and defines settings
 game = Game()
 rect_len = game.settings.rect_len # Width/height of square icons used during gameplay (in px)
@@ -153,7 +159,19 @@ def button(msg, x, y, w, h, inactive_color, active_color, action=None, parameter
     click = pygame.mouse.get_pressed() # Checks if mouse is being clicked
     
     if x + w > mouse[0] > x and y + h > mouse[1] > y: # Checks if mouse is over the button
-        pygame.draw.rect(screen, active_color, (x, y, w, h)) # Display button changes colour
+        
+        #print("is highlighted") #Luke debug
+        
+        if (msg == 'Play!'):
+            screen.blit(go_button_highlight, (x, y))
+        
+        elif (msg == 'Quit'):
+            screen.blit(quit_button_highlighted, (x, y))
+        
+        else:
+            pygame.draw.rect(screen, active_color, (x, y, w, h)) # Display button changes colour
+        
+        
         if click[0] == 1 and action != None: # Checks if mouse is clicked
             if parameter != None:
                 action(parameter) # Call specified function if it has parameter
@@ -161,12 +179,19 @@ def button(msg, x, y, w, h, inactive_color, active_color, action=None, parameter
                 action() # Call specified function if it does not have a parameter
     else:
         # Display button changes back to original colour
-        pygame.draw.rect(screen, inactive_color, (x, y, w, h)) 
-
-    smallText = pygame.font.SysFont('comicsansms', 20) # Defines font for button text
-    TextSurf, TextRect = text_objects(msg, smallText)
-    TextRect.center = (x + (w / 2), y + (h / 2))
-    screen.blit(TextSurf, TextRect) # Updates text on screen
+        #pygame.draw.rect(screen, inactive_color, (x, y, w, h))
+        if (msg == 'Play!'):
+            screen.blit(go_button, (x, y))
+        
+        elif (msg == 'Quit'):
+            screen.blit(quit_button, (x, y))
+            
+        else:
+            pygame.draw.rect(screen, inactive_color, (x, y, w, h))
+            smallText = pygame.font.SysFont('comicsansms', 20) # Defines font for button text
+            TextSurf, TextRect = text_objects(msg, smallText)
+            TextRect.center = (x + (w / 2), y + (h / 2))
+            screen.blit(TextSurf, TextRect) # Updates text on screen
 
 
 # Quits both pygame and python code - can now be easily called
@@ -220,8 +245,8 @@ def crash():
     
     screen.fill(white)
     # loads and prints background of the main page
-    bg_img = pygame.image.load("logos/gamelogo.png")
-    screen.blit(bg_img, (0,0))
+    bg_img = pygame.image.load("logos/title.png")
+    screen.blit(bg_img, (25, 50))
 
 
 # Main menu - First function called by code
@@ -231,8 +256,10 @@ def initial_interface():
     
     config.new_life = 0
     intro = True
-    bg_img = pygame.image.load("logos/gamelogo.png")
-    screen.blit(bg_img, (0,0))
+    screen.fill(white)
+    
+    bg_img = pygame.image.load("logos/title.png")
+    screen.blit(bg_img, (25, 50))
     while intro:
         # Application is closed
         for event in pygame.event.get(): 
@@ -241,7 +268,7 @@ def initial_interface():
                 # Modification - Gracefully closes python program
                 quit() 
 
-        message_display('Gluttonous', game.settings.width / 2 * 15, game.settings.height / 4 * 15) # Title
+        #message_display('Gluttonous', game.settings.width / 2 * 15, game.settings.height / 4 * 15) # Title
         
         high_score = db.session.query(func.max(Model.score)).scalar()
         message_display('Highscore: ' + str(high_score), game.settings.width/2*15, \
