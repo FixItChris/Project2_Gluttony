@@ -27,19 +27,19 @@ class Settings:
 class Snake:
     def __init__(self):
         # Loading of all images of the snake's head (up/down/left/right)
-        self.image_up = pygame.image.load('images/head_up.bmp')
-        self.image_down = pygame.image.load('images/head_down.bmp')
-        self.image_left = pygame.image.load('images/head_left.bmp')
-        self.image_right = pygame.image.load('images/head_right.bmp')
+        self.image_up = pygame.image.load('images/head_up.png')
+        self.image_down = pygame.image.load('images/head_down.png')
+        self.image_left = pygame.image.load('images/head_left.png')
+        self.image_right = pygame.image.load('images/head_right.png')
 
         # Loading of all images of the snake's tail (up/down/left/right)
-        self.tail_up = pygame.image.load('images/tail_up.bmp')
-        self.tail_down = pygame.image.load('images/tail_down.bmp')
-        self.tail_left = pygame.image.load('images/tail_left.bmp')
-        self.tail_right = pygame.image.load('images/tail_right.bmp')
+        self.tail_up = pygame.image.load('images/tail_up.png')
+        self.tail_down = pygame.image.load('images/tail_down.png')
+        self.tail_left = pygame.image.load('images/tail_left.png')
+        self.tail_right = pygame.image.load('images/tail_right.png')
         
         # Loading image of snake's body - to be used for all other sections of snake
-        self.image_body = pygame.image.load('images/body.bmp')
+        self.image_body = pygame.image.load('images/body.png')
 
         # Calls initialize function below
         self.initialize()
