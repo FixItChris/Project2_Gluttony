@@ -71,8 +71,8 @@ pygame.init()
 fpsClock = pygame.time.Clock()
 
 font_descript = pygame.font.SysFont("arial", 10, True)
-background = pygame.image.load('./logos/gamelogo.png')
-team_logo = pygame.image.load('./logos/team.png')
+background = pygame.image.load('./logos/loading_1_(1.0).png')
+team_logo = pygame.image.load('./logos/loading_2.png')
 
 # Sets display window size - Square - number of squares in grid * 15px
 screen = pygame.display.set_mode((game.settings.width * 15, game.settings.height * 15 + 25))
@@ -95,7 +95,8 @@ def kick_start(background, progress=0):
                 quit()
 
         screen.fill(white)
-        screen.blit(background, (-80, 10))
+        #screen.blit(background, (-80, 10))
+        screen.blit(background, (0, 0))
         if progress > 100:
             time.sleep(1)
             break
@@ -116,7 +117,8 @@ def team_logo_display():
     screen.fill(white)
     while time_kept < 50:
         time_kept += 1
-        screen.blit(team_logo, ((game.settings.width * 15 - team_logo.get_width())/2, (game.settings.height * 15 - team_logo.get_height() - 20)/2))
+        #screen.blit(team_logo, ((game.settings.width * 15 - team_logo.get_width())/2, (game.settings.height * 15 - team_logo.get_height() - 20)/2))
+        screen.blit(team_logo, (0,0))
         pygame.display.flip()
         time.sleep(time_keep)
         for event in pygame.event.get(): 
@@ -243,10 +245,13 @@ def crash():
         message_display('Game over!', game.settings.width / 2 * 15, game.settings.height / 1.75 * 15, red)
         time.sleep(2)
     
-    screen.fill(white)
-    # loads and prints background of the main page
-    bg_img = pygame.image.load("logos/title.png")
-    screen.blit(bg_img, (25, 50))
+    # creates new background for main page
+    bg_img = pygame.image.load('images/background.png')
+    screen.blit(bg_img, (0,0))
+    
+    # loads title for main page
+    title = pygame.image.load("logos/title.png")
+    screen.blit(title, (25, 50))
 
 
 # Main menu - First function called by code
@@ -256,10 +261,15 @@ def initial_interface():
     
     config.new_life = 0
     intro = True
-    screen.fill(white)
     
-    bg_img = pygame.image.load("logos/title.png")
-    screen.blit(bg_img, (25, 50))
+    # creates new background for main page
+    bg_img = pygame.image.load('images/background.png')
+    screen.blit(bg_img, (0,0))
+    
+    # loads title for main page
+    title = pygame.image.load("logos/title.png")
+    screen.blit(title, (25, 50))
+    
     while intro:
         # Application is closed
         for event in pygame.event.get(): 
@@ -278,35 +288,16 @@ def initial_interface():
         
         button('Play!', 80, 240, 80, 40, green, bright_green, game_loop, 'human') # Calls game_loop function
         button('Quit', 270, 240, 80, 40, red, bright_red, quitgame) # Calls quitgame function
-        button('About', 270, 300, 80, 40, blue, bright_blue, about_page)
-        button('Help', 270, 360, 80, 40, blue, bright_blue, help_page)
+        
+        button('Help', 270, 300, 80, 40, blue, bright_blue, help_page)
 
         if db.session.query(func.max(Model.score)).scalar() > 0:
-            button('Highscores', 80, 360, 80, 40, green, bright_green, view_hs)
+            button('Highscores', 80, 300, 80, 40, green, bright_green, view_hs)
         else:
-            button('Highscores', 80, 360, 80, 40, grey, grey)
-        
-        button('Against AI', 80, 300, 80, 40, green, bright_green, ai_page)
+            button('Highscores', 80, 300, 80, 40, grey, grey)
 
         pygame.display.update() # Refresh screen (Bug - while loop causes flickering of buttons)
         pygame.time.Clock().tick()
-
-
-def ai_page():
-    pygame.display.set_caption('Gluttonous: Play against AI')
-    about = True
-    screen.fill(black)
-    font_descri = pygame.font.SysFont("comicsansms", 30, True)
-    while about:
-        for event in pygame.event.get(): 
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                quit() 
-        button('Back', 10, 10, 80, 40, blue, bright_blue, initial_interface)
-        screen.blit(font_descri.render("Coming Soon! Please wait", True, white), (50, 50))
-        screen.blit(font_descri.render("for further updates...", True, white), (50, 80))
-        pygame.display.update()
-        pygame.time.Clock().tick()    
 
 def view_hs():
     pygame.display.set_caption('Gluttonous: About')
@@ -318,19 +309,6 @@ def view_hs():
                 pygame.quit()
                 quit() 
         button('Back', 10, 10, 80, 40, blue, bright_blue, initial_interface)
-        pygame.display.update()
-        pygame.time.Clock().tick()
-
-def about_page():
-    pygame.display.set_caption('Gluttonous: About')
-    about = True
-    screen.fill(white)
-    while about:
-        for event in pygame.event.get(): 
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                quit()        
-        button('Back', 10, 10, 80, 40, blue, bright_blue, initial_interface)     
         pygame.display.update()
         pygame.time.Clock().tick()
 
