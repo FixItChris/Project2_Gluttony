@@ -50,6 +50,12 @@ go_button_highlight = pygame.image.load('./logos/go_button_highlighted.png')
 quit_button = pygame.image.load('./logos/quit_button.png')
 quit_button_highlighted = pygame.image.load('./logos/quit_button_highlighted.png')
 
+high_button = pygame.image.load('./logos/hi-score.png')
+high_button_highlighted = pygame.image.load('./logos/hi-score_highlighted.png')
+
+help_button = pygame.image.load('./logos/help.png')
+help_button_highlighted = pygame.image.load('./logos/help_highlighted.png')
+
 # Initialises Game class (from game.py) and defines settings
 game = Game()
 rect_len = game.settings.rect_len # Width/height of square icons used during gameplay (in px)
@@ -71,7 +77,7 @@ pygame.init()
 fpsClock = pygame.time.Clock()
 
 font_descript = pygame.font.SysFont("arial", 10, True)
-background = pygame.image.load('./logos/loading_1_(1.0).png')
+background = pygame.image.load('./logos/loading_1_1.png')
 team_logo = pygame.image.load('./logos/loading_2.png')
 
 # Sets display window size - Square - number of squares in grid * 15px
@@ -170,6 +176,12 @@ def button(msg, x, y, w, h, inactive_color, active_color, action=None, parameter
         elif (msg == 'Quit'):
             screen.blit(quit_button_highlighted, (x, y))
         
+        elif (msg == 'Help'):
+            screen.blit(help_button_highlighted, (x,y))
+            
+        elif (msg == 'Highscores'):
+            screen.blit(high_button_highlighted, (x,y))
+        
         else:
             pygame.draw.rect(screen, active_color, (x, y, w, h)) # Display button changes colour
         
@@ -187,6 +199,12 @@ def button(msg, x, y, w, h, inactive_color, active_color, action=None, parameter
         
         elif (msg == 'Quit'):
             screen.blit(quit_button, (x, y))
+            
+        elif (msg == 'Help'):
+            screen.blit(help_button, (x,y))
+            
+        elif (msg == 'Highscores'):
+            screen.blit(high_button, (x,y))
             
         else:
             pygame.draw.rect(screen, inactive_color, (x, y, w, h))
@@ -302,7 +320,11 @@ def initial_interface():
 def view_hs():
     pygame.display.set_caption('Gluttonous: About')
     about = True
-    screen.fill(white)
+    
+    # creates new background for main page
+    bg_img = pygame.image.load('images/background.png')
+    screen.blit(bg_img, (0,0))
+    
     while about:
         for event in pygame.event.get(): 
             if event.type == pygame.QUIT:
@@ -315,7 +337,11 @@ def view_hs():
 def help_page():
     pygame.display.set_caption('Gluttonous: About')
     about = True
-    screen.fill(white)
+    
+    # creates new background for main page
+    bg_img = pygame.image.load('images/background.png')
+    screen.blit(bg_img, (0,0))
+    
     link_font = pygame.font.SysFont('arial', 20)
     link_colour = (0, 0, 0)
     while about:
