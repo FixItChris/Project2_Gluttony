@@ -149,6 +149,7 @@ pygame.display.set_icon(pygame_icon)
 crash_sound = pygame.mixer.Sound('./sound/crash.wav')
 game_over = pygame.mixer.Sound('./sound/game_over.mp3')
 drinking_potion = pygame.mixer.Sound('./sound/drinking_potion.mp3')
+high = pygame.mixer.Sound('./sound/highscore.mp3')
 
 # Applies required styling to the text given as input
 def text_objects(text, font, color=black):
@@ -262,14 +263,17 @@ def crash():
     if config.has_potion:
         config.has_potion = 0
         config.new_life = 1
-        
         message_display('Potion Used', game.settings.width / 2 * 15, game.settings.height / 1.75 * 15, green_dark)
+        
         pygame.mixer.Sound.play(drinking_potion)
         time.sleep(2)
         game_loop('human')
 
     elif game.snake.score > high_score:
         message_display('NEW HIGHSCORE!', game.settings.width / 2 * 15, game.settings.height / 1.75 * 15, green_dark, 40)
+        
+        pygame.mixer.Sound.play(high)
+        
         time.sleep(2)
     else:   
         message_display('Game over!', game.settings.width / 2 * 15, game.settings.height / 1.75 * 15, red)
