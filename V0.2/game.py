@@ -265,7 +265,7 @@ class Game:
        
             # Modification - Special fruit chances
             rng = random.randint(0,100)
-            if rng > 45 and not config.potion_out and not config.has_potion:
+            if rng > 95 and not config.potion_out and not config.has_potion:
                 config.potion_out = 1
                 self.potion.random_pos(self.snake)
                 self.potion.blit(screen)

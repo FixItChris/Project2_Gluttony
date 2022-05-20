@@ -94,8 +94,8 @@ screen = pygame.display.set_mode((game.settings.width * 15, game.settings.height
 
 # Modification - Loading Screen
 def kick_start(background, progress=0):
-    current_game = Model(config.player_name, 0)
-    db.session.add(current_game)
+    initialise_game = Model(config.player_name, 0)
+    db.session.add(initialise_game)
     db.session.commit()
     
     pygame.display.set_caption('Pygame: Loading - Gluttonous')
@@ -255,9 +255,7 @@ def crash():
     
     high_score = db.session.query(func.max(Model.score)).scalar() # Gathers new highscore
     
-    current_game = Model(config.player_name, game.snake.score)
-    db.session.add(current_game)
-    db.session.commit()
+    
 
     # Prints game over message on screen
     message_display('Crashed!', width / 2 * 15, height / 3 * 15, white)
@@ -272,12 +270,18 @@ def crash():
         game_loop('human')
 
     elif game.snake.score > high_score:
-        message_display('NEW HIGHSCORE!', width / 2 * 15, height / 1.75 * 15, green_dark, 40)
+        message_display('New Highscore!', width / 2 * 15, height / 1.75 * 15, green_dark, 40)
         pygame.mixer.Sound.play(high)
+        current_game = Model(config.player_name, game.snake.score)
+        db.session.add(current_game)
+        db.session.commit()
         time.sleep(2)
+
     else:   
         message_display('Game over!', width / 2 * 15, height / 1.75 * 15, red)
-        
+        current_game = Model(config.player_name, game.snake.score)
+        db.session.add(current_game)
+        db.session.commit()
         pygame.mixer.Sound.play(game_over)
         time.sleep(2)
         
@@ -342,17 +346,24 @@ def view_hs():
     # creates new background for main page
     bg_img = pygame.image.load('images/background.png')
     screen.blit(bg_img, (0,0))
+    games_played = len([game for game in Model.query.all() if game.score != 0])
     
     while True:
         for event in pygame.event.get(): 
             if event.type == pygame.QUIT:
                 quitgame()
-                
-        games = sorted([game for game in Model.query.all()], key=lambda game: -game.score)[:10]
-        for i in range(10):
-            small_message(black, screen, str(i+1)+'.', 50, 60+(i*38), size=36)
-            small_message(black, screen, str(games[i].player), 100, 60+(i*38), size=36)
-            small_message(black, screen, str(games[i].score), 350, 60+(i*38), size=36)
+        if games_played >= 10:
+            games = sorted([game for game in Model.query.all()], key=lambda game: -game.score)[:10]
+            for i in range(10):
+                small_message(black, screen, str(i+1)+'.', 50, 60+(i*38), size=36)
+                small_message(black, screen, str(games[i].player), 100, 60+(i*38), size=36)
+                small_message(black, screen, str(games[i].score), 350, 60+(i*38), size=36)
+        else:
+            games = sorted([game for game in Model.query.all()], key=lambda game: -game.score)[:games_played]
+            for i in range(games_played):
+                small_message(black, screen, str(i+1)+'.', 50, 60+(i*38), size=36)
+                small_message(black, screen, str(games[i].player), 100, 60+(i*38), size=36)
+                small_message(black, screen, str(games[i].score), 350, 60+(i*38), size=36)
 
         button('BACK', 10, 10, 80, 40, blue, bright_blue, initial_interface)
         pygame.display.update()
@@ -398,7 +409,7 @@ def help_page():
 
 
 # Gameplay Screen
-def game_loop(player, fps=10):
+def game_loop(player, fps=8):
     game.restart_game()
     if config.new_life:
         pygame.mixer.music.play(-1)
@@ -408,10 +419,14 @@ def game_loop(player, fps=10):
     high_score = db.session.query(func.max(Model.score)).scalar()
     config.fps = fps
     config.game_over = 0
-    
+    speed_up_score = 5 
     
     while not game.game_end() and not config.game_over:
         pygame.event.pump()
+
+        if game.snake.score >= speed_up_score:
+            config.fps += 1
+            speed_up_score += 5
 
         move = human_move() # Receives input from user
         fps = config.fps # Determines how often the game is refreshed (speed of snake)
@@ -443,13 +458,13 @@ def game_loop(player, fps=10):
         
         if config.potion_out:
             game.potion.blit(screen)
+        
         # Modification - Show potion on scoreboard after consuming
         elif config.has_potion:
             screen.blit(game.potion.image, (85,5))
-
-
-
-        game.blit_score(white, screen) # Draws/updates user score
+        
+        # Modification - Shows scoreboard off board
+        game.blit_score(white, screen)
         speed_message = 'Speed: ' + str(config.fps)
         small_message(white, screen, speed_message, game.settings.width*15-85, 5)        
         if game.snake.score > high_score:
