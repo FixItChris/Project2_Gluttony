@@ -245,6 +245,9 @@ class Model(db.Model):
 
 # Displays the 'crash' screen when required
 def crash():
+    height = game.settings.height
+    width = game.settings.width
+
     pygame.mixer.Sound.play(crash_sound) # Plays sound effect
     
     pygame.mixer.music.stop() # Stops sound effect
@@ -256,23 +259,23 @@ def crash():
     db.session.commit()
 
     # Prints game over message on screen
-    message_display('Crashed!', game.settings.width / 2 * 15, game.settings.height / 3 * 15, white)
+    message_display('Crashed!', width / 2 * 15, height / 3 * 15, white)
     
     time.sleep(1)
     if config.has_potion:
         config.has_potion = 0
         config.new_life = 1
         
-        message_display('Potion Used', game.settings.width / 2 * 15, game.settings.height / 1.75 * 15, green_dark)
+        message_display('Potion Used', width / 2 * 15, height / 1.75 * 15, green_dark)
         pygame.mixer.Sound.play(drinking_potion)
         time.sleep(2)
         game_loop('human')
 
     elif game.snake.score > high_score:
-        message_display('NEW HIGHSCORE!', game.settings.width / 2 * 15, game.settings.height / 1.75 * 15, green_dark, 40)
+        message_display('NEW HIGHSCORE!', width / 2 * 15, height / 1.75 * 15, green_dark, 40)
         time.sleep(2)
     else:   
-        message_display('Game over!', game.settings.width / 2 * 15, game.settings.height / 1.75 * 15, red)
+        message_display('Game over!', width / 2 * 15, height / 1.75 * 15, red)
         
         pygame.mixer.Sound.play(game_over)
         time.sleep(2)
@@ -334,17 +337,22 @@ def initial_interface():
 # Modification - Leaderboard screen
 def view_hs():
     pygame.display.set_caption('Gluttonous: High Score') # Title bar description
-    about = True
     
     # creates new background for main page
     bg_img = pygame.image.load('images/background.png')
     screen.blit(bg_img, (0,0))
     
-    while about:
+    while True:
         for event in pygame.event.get(): 
             if event.type == pygame.QUIT:
                 quitgame()
                 
+        games = sorted([game for game in Model.query.all()], key=lambda game: -game.score)[:10]
+        for i in range(10):
+            small_message(black, screen, str(i+1)+'.', 50, 60+(i*38), size=36)
+            small_message(black, screen, str(games[i].player), 100, 60+(i*38), size=36)
+            small_message(black, screen, str(games[i].score), 350, 60+(i*38), size=36)
+
         button('BACK', 10, 10, 80, 40, blue, bright_blue, initial_interface)
         pygame.display.update()
         pygame.time.Clock().tick()
@@ -392,6 +400,7 @@ def help_page():
 def game_loop(player, fps=10):
     game.restart_game()
     if config.new_life:
+        pygame.mixer.music.play(-1)
         config.new_life = 0
 
     pos_x = game.settings.width*15/2 - 45
@@ -399,7 +408,6 @@ def game_loop(player, fps=10):
     config.fps = fps
     config.game_over = 0
     
-    pygame.mixer.music.play(-1)
     
     while not game.game_end() and not config.game_over:
         pygame.event.pump()
@@ -457,8 +465,8 @@ def game_loop(player, fps=10):
     crash() # Triggers crash sequence once game is finished
 
 
-def small_message(color, screen, message, pos_x, pos_y):
-    font = pygame.font.SysFont(None, 25)
+def small_message(color, screen, message, pos_x, pos_y, size=25):
+    font = pygame.font.SysFont(None, size)
     text_surf, text_rect = text_objects(message, font, color)
     text_rect.center = (pos_x, pos_y)
     screen.blit(text_surf, (pos_x, pos_y))
