@@ -169,7 +169,7 @@ def text_objects(text, font, color=black):
 
 # Used to displays messages on screen in game - Modified so it can use different size/colour
 def message_display(text, x, y, color=black, size=50):
-    large_text = pygame.font.SysFont('comicsansms', size)
+    large_text = pygame.font.SysFont('calibri', size)
     text_surf, text_rect = text_objects(text, large_text, color)
     text_rect.center = (x, y)
     screen.blit(text_surf, text_rect)
@@ -296,11 +296,11 @@ def crash():
         time.sleep(2)
         
     # creates new background for main page
-    bg_img = pygame.image.load('images/background.png')
+    bg_img = pygame.image.load(resource_path('images/background.png'))
     screen.blit(bg_img, (0,0))
     
     # loads title for main page
-    title = pygame.image.load("logos/title.png")
+    title = pygame.image.load(resource_path("logos/title.png"))
     screen.blit(title, (25, 50))
     pygame.mixer.music.play(-1)
 
@@ -313,11 +313,11 @@ def initial_interface():
     intro = True
     
     # creates new background for main page
-    bg_img = pygame.image.load('images/background.png')
+    bg_img = pygame.image.load(resource_path('images/background.png'))
     screen.blit(bg_img, (0,0))
     
     # loads title for main page
-    title = pygame.image.load("logos/title.png")
+    title = pygame.image.load(resource_path("logos/title.png"))
     screen.blit(title, (25, 50))
     
 
