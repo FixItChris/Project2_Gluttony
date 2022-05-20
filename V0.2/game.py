@@ -2,16 +2,26 @@
 import pygame, random
 import numpy as np
 import config
+import sys, os
+
+# Modification - Compiling into executable
+def resource_path(relative_path):
+    try:
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.environ.get("_MEIPASS2", os.path.abspath("."))
+
+    return os.path.join(base_path, relative_path)
 
 pygame.init() # Initialise pygame module
 
 # Modification - Added sound effect for eating food
-point_collect = pygame.mixer.Sound('./sound/eating_regular_fruit.mp3')
-mushroom_fast = pygame.mixer.Sound('./sound/fast_mushroom.mp3')
-mushroom_slow = pygame.mixer.Sound('./sound/slow_mushroom.mp3')
-super_sound = pygame.mixer.Sound('./sound/super_fruit.mp3')
-potion_sound = pygame.mixer.Sound('./sound/potion.mp3')
-crash_into_sound = pygame.mixer.Sound('./sound/crashes_into_itself.mp3')
+point_collect = pygame.mixer.Sound(resource_path('sound/eating_regular_fruit.mp3'))
+mushroom_fast = pygame.mixer.Sound(resource_path('sound/fast_mushroom.mp3'))
+mushroom_slow = pygame.mixer.Sound(resource_path('sound/slow_mushroom.mp3'))
+super_sound = pygame.mixer.Sound(resource_path('sound/super_fruit.mp3'))
+potion_sound = pygame.mixer.Sound(resource_path('sound/potion.mp3'))
+crash_into_sound = pygame.mixer.Sound(resource_path('sound/crashes_into_itself.mp3'))
 
 # Defines properties of the screen
 class Settings:
@@ -25,19 +35,19 @@ class Settings:
 class Snake:
     def __init__(self):
         # Loading of all images of the snake's head (up/down/left/right)
-        self.image_up = pygame.image.load('images/head_up.png')
-        self.image_down = pygame.image.load('images/head_down.png')
-        self.image_left = pygame.image.load('images/head_left.png')
-        self.image_right = pygame.image.load('images/head_right.png')
+        self.image_up = pygame.image.load(resource_path('images/head_up.png'))
+        self.image_down = pygame.image.load(resource_path('images/head_down.png'))
+        self.image_left = pygame.image.load(resource_path('images/head_left.png'))
+        self.image_right = pygame.image.load(resource_path('images/head_right.png'))
 
         # Loading of all images of the snake's tail (up/down/left/right)
-        self.tail_up = pygame.image.load('images/tail_up.png')
-        self.tail_down = pygame.image.load('images/tail_down.png')
-        self.tail_left = pygame.image.load('images/tail_left.png')
-        self.tail_right = pygame.image.load('images/tail_right.png')
+        self.tail_up = pygame.image.load(resource_path('images/tail_up.png'))
+        self.tail_down = pygame.image.load(resource_path('images/tail_down.png'))
+        self.tail_left = pygame.image.load(resource_path('images/tail_left.png'))
+        self.tail_right = pygame.image.load(resource_path('images/tail_right.png'))
         
         # Loading image of snake's body - to be used for all other sections of snake
-        self.image_body = pygame.image.load('images/body.png')
+        self.image_body = pygame.image.load(resource_path('images/body.png'))
 
         # Calls initialize function below
         self.initialize()
@@ -128,13 +138,13 @@ class Strawberry():
         self.settings = settings # Stores settings from class given as input
         
         # Randomly selects image of food to display on screen
-        self.image = pygame.image.load('images/fruit.png')
+        self.image = pygame.image.load(resource_path('images/fruit.png'))
         self.initialize() # Sets initial position of strawberry
     
     # Defines random position to place new strawberry
     def random_pos(self, snake):
         # Randomly selects image of food to display on screen
-        self.image = pygame.image.load('images/fruit.png')
+        self.image = pygame.image.load(resource_path('images/fruit.png'))
 
         # Randomly selects position of food on board
         self.position[0] = random.randint(0, self.settings.width-1)
@@ -156,7 +166,7 @@ class Strawberry():
 class Mushroom(Strawberry):
     def __init__(self, settings):
         super().__init__(settings)
-        self.image = pygame.image.load('images/mushroom.png')
+        self.image = pygame.image.load(resource_path('images/mushroom.png'))
     
     def random_pos(self, snake):
         self.position[0] = random.randint(0, self.settings.width-1)
@@ -169,7 +179,7 @@ class Mushroom(Strawberry):
 class Super_Fruit(Strawberry):
     def __init__(self, settings):
         super().__init__(settings)
-        self.image = pygame.image.load('images/super_fruit.png')
+        self.image = pygame.image.load(resource_path('images/super_fruit.png'))
     
     def random_pos(self, snake):
         self.position[0] = random.randint(0, self.settings.width-1)
@@ -182,7 +192,7 @@ class Super_Fruit(Strawberry):
 class Potion(Strawberry):
     def __init__(self, settings):
         super().__init__(settings)
-        self.image = pygame.image.load('images/snake_potion.png')
+        self.image = pygame.image.load(resource_path('images/snake_potion.png'))
     
     def random_pos(self, snake):
         self.position[0] = random.randint(0, self.settings.width-1)

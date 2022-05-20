@@ -4,6 +4,7 @@ import time
 from pygame.locals import KEYDOWN, K_RIGHT, K_LEFT, K_UP, K_DOWN, K_ESCAPE
 from pygame.locals import QUIT
 import webbrowser
+import sys, os
 
 # Imports Game class defined in 'game.py' which contains Settings, Snake and Strawberry classes
 from game import Game
@@ -14,6 +15,15 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func
 import config
 import random
+
+# Modification - Compiling into executable
+def resource_path(relative_path):
+    try:
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.environ.get("_MEIPASS2", os.path.abspath("."))
+
+    return os.path.join(base_path, relative_path)
 
 
 app = flask.Flask(__name__)
@@ -40,24 +50,24 @@ grey = pygame.Color(194, 197, 204)
 
 
 # Modification - Addition of new buttons and designs
-go_button = pygame.image.load('./logos/go_button.png')
-go_button_highlight = pygame.image.load('./logos/go_button_highlighted.png')
+go_button = pygame.image.load(resource_path('logos/go_button.png'))
+go_button_highlight = pygame.image.load(resource_path('logos/go_button_highlighted.png'))
 
-quit_button = pygame.image.load('./logos/quit_button.png')
-quit_button_highlighted = pygame.image.load('./logos/quit_button_highlighted.png')
+quit_button = pygame.image.load(resource_path('logos/quit_button.png'))
+quit_button_highlighted = pygame.image.load(resource_path('logos/quit_button_highlighted.png'))
 
-high_button = pygame.image.load('./logos/hi-score.png')
-high_button_highlighted = pygame.image.load('./logos/hi-score_highlighted.png')
+high_button = pygame.image.load(resource_path('logos/hi-score.png'))
+high_button_highlighted = pygame.image.load(resource_path('logos/hi-score_highlighted.png'))
 
-help_button = pygame.image.load('./logos/help.png')
-help_button_highlighted = pygame.image.load('./logos/help_highlighted.png')
+help_button = pygame.image.load(resource_path('logos/help.png'))
+help_button_highlighted = pygame.image.load(resource_path('logos/help_highlighted.png'))
 
-back_button = pygame.image.load('./logos/back.png')
-back_button_highlighted = pygame.image.load('./logos/back_highlighted.png')
+back_button = pygame.image.load(resource_path('logos/back.png'))
+back_button_highlighted = pygame.image.load(resource_path('logos/back_highlighted.png'))
 
-background = pygame.image.load('./logos/loading_1_1.png')
-team_logo = pygame.image.load('./logos/loading_2.png')
-bg_img2 = pygame.image.load('images/background.png')
+background = pygame.image.load(resource_path('logos/loading_1_1.png'))
+team_logo = pygame.image.load(resource_path('logos/loading_2.png'))
+bg_img2 = pygame.image.load(resource_path('images/background.png'))
 
 font_descript = pygame.font.SysFont("arial", 10, True)
 
@@ -142,14 +152,14 @@ def team_logo_display():
 
 
 # Modification - Adding application icon
-pygame_icon = pygame.image.load('./logos/application.png')
+pygame_icon = pygame.image.load(resource_path('logos/application.png'))
 pygame.display.set_icon(pygame_icon)
 
 # Initialising game assets (audio)
-crash_sound = pygame.mixer.Sound('./sound/crash.wav')
-game_over = pygame.mixer.Sound('./sound/game_over.mp3')
-drinking_potion = pygame.mixer.Sound('./sound/drinking_potion.mp3')
-high = pygame.mixer.Sound('./sound/highscore.mp3')
+crash_sound = pygame.mixer.Sound(resource_path('sound/crash.wav'))
+game_over = pygame.mixer.Sound(resource_path('sound/game_over.mp3'))
+drinking_potion = pygame.mixer.Sound(resource_path('sound/drinking_potion.mp3'))
+high = pygame.mixer.Sound(resource_path('sound/highscore.mp3'))
 
 # Applies required styling to the text given as input
 def text_objects(text, font, color=black):
@@ -228,7 +238,7 @@ def button(msg, x, y, w, h, inactive_color, active_color, action=None, parameter
 # Quits both pygame and python code - can now be easily called
 def quitgame():
     pygame.quit()
-    quit()
+    sys.exit()
 
 # Modification - Leaderboard
 def get_pid():
@@ -344,7 +354,7 @@ def view_hs():
     pygame.display.set_caption('Gluttonous: High Score') # Title bar description
     
     # creates new background for main page
-    bg_img = pygame.image.load('images/background.png')
+    bg_img = pygame.image.load(resource_path('images/background.png'))
     screen.blit(bg_img, (0,0))
     games_played = len([game for game in Model.query.all() if game.score != 0])
     
@@ -375,7 +385,7 @@ def help_page():
     pygame.display.set_caption('Gluttonous: Help') # Title bar description
     
     # creates new background for main page
-    bg_img = pygame.image.load('images/background.png')
+    bg_img = pygame.image.load(resource_path('images/background.png'))
     screen.blit(bg_img, (0,0))
     
     link_font = pygame.font.SysFont('arial', 20)
@@ -518,7 +528,7 @@ if __name__ == "__main__":
     kick_start(background) # loading screen
     team_logo_display() # loads logo
     
-    pygame.mixer.music.load('./sound/background.mp3')
+    pygame.mixer.music.load(resource_path('sound/background.mp3'))
     pygame.mixer.music.play(-1)
     
     initial_interface() # Loads main menu
