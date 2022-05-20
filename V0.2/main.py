@@ -35,6 +35,7 @@ black = pygame.Color(0, 0, 0)
 white = pygame.Color(255, 255, 255)
 
 green = pygame.Color(0, 200, 0)
+green_dark = pygame.Color(0, 100, 0)
 bright_green = pygame.Color(0, 255, 0)
 load_green = pygame.Color(100, 255, 0)
 red = pygame.Color(200, 0, 0)
@@ -43,6 +44,7 @@ blue = pygame.Color(32, 178, 170)
 bright_blue = pygame.Color(32, 200, 200)
 yellow = pygame.Color(255, 205, 0)
 bright_yellow = pygame.Color(255, 255, 0)
+grey = pygame.Color(194, 197, 204)
 
 go_button = pygame.image.load('./logos/go_button.png')
 go_button_highlight = pygame.image.load('./logos/go_button_highlighted.png')
@@ -55,6 +57,9 @@ high_button_highlighted = pygame.image.load('./logos/hi-score_highlighted.png')
 
 help_button = pygame.image.load('./logos/help.png')
 help_button_highlighted = pygame.image.load('./logos/help_highlighted.png')
+
+back_button = pygame.image.load('./logos/back.png')
+back_button_highlighted = pygame.image.load('./logos/back_highlighted.png')
 
 # Initialises Game class (from game.py) and defines settings
 game = Game()
@@ -181,7 +186,10 @@ def button(msg, x, y, w, h, inactive_color, active_color, action=None, parameter
             
         elif (msg == 'Highscores'):
             screen.blit(high_button_highlighted, (x,y))
-        
+            
+        elif (msg == 'BACK'):
+            screen.blit(back_button_highlighted, (x,y))
+            
         else:
             pygame.draw.rect(screen, active_color, (x, y, w, h)) # Display button changes colour
         
@@ -205,6 +213,9 @@ def button(msg, x, y, w, h, inactive_color, active_color, action=None, parameter
             
         elif (msg == 'Highscores'):
             screen.blit(high_button, (x,y))
+            
+        elif (msg == 'BACK'):
+            screen.blit(back_button, (x,y))
             
         else:
             pygame.draw.rect(screen, inactive_color, (x, y, w, h))
@@ -246,7 +257,7 @@ def crash():
     db.session.commit()
 
     # Prints game over message on screen
-    message_display('crashed', game.settings.width / 2 * 15, game.settings.height / 3 * 15, white)
+    message_display('Crashed!', game.settings.width / 2 * 15, game.settings.height / 3 * 15, white)
     time.sleep(1)
     if config.has_potion:
         config.has_potion = 0
@@ -257,7 +268,7 @@ def crash():
         game_loop('human')
 
     elif game.snake.score > high_score:
-        message_display('NEW HIGHSCORE!', game.settings.width / 2 * 15, game.settings.height / 1.75 * 15, green)
+        message_display('NEW HIGHSCORE!', game.settings.width / 2 * 15, game.settings.height / 1.75 * 15, green_dark, 40)
         time.sleep(2)
     else:   
         message_display('Game over!', game.settings.width / 2 * 15, game.settings.height / 1.75 * 15, red)
@@ -330,7 +341,7 @@ def view_hs():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit() 
-        button('Back', 10, 10, 80, 40, blue, bright_blue, initial_interface)
+        button('BACK', 10, 10, 80, 40, blue, bright_blue, initial_interface)
         pygame.display.update()
         pygame.time.Clock().tick()
 
@@ -357,7 +368,7 @@ def help_page():
                 pos = event.pos
 
                 if game_man.collidepoint(pos):
-                    webbrowser.open(r"https://unisydneyedu-my.sharepoint.com/:w:/g/personal/papi6478_uni_sydney_edu_au/ESYE-a_WioVHgp-a3wCSaE8BqqFfgpXydRC51VgMUjDDgA?e=tYVzUb")
+                    webbrowser.open(r"https://unisydneyedu-my.sharepoint.com/:w:/g/personal/papi6478_uni_sydney_edu_au/Eb1_y4EqwrdMrb87UmkyY6ABGm8KpPnAQbew_4DYnWHVTQ?e=KHhSGB")
             
         if game_man.collidepoint(pygame.mouse.get_pos()):
             link_colour = (70, 29, 219)
