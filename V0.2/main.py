@@ -149,7 +149,8 @@ pygame.display.set_icon(pygame_icon)
 
 # Initialising game assets (audio)
 crash_sound = pygame.mixer.Sound('./sound/crash.wav')
-
+game_over = pygame.mixer.Sound('./sound/game_over.mp3')
+drinking_potion = pygame.mixer.Sound('./sound/drinking_potion.mp3')
 
 # Applies required styling to the text given as input
 def text_objects(text, font, color=black):
@@ -260,12 +261,14 @@ def crash():
 
     # Prints game over message on screen
     message_display('Crashed!', game.settings.width / 2 * 15, game.settings.height / 3 * 15, white)
+    
     time.sleep(1)
     if config.has_potion:
         config.has_potion = 0
         config.new_life = 1
         
-        message_display('Potion Used', game.settings.width / 2 * 15, game.settings.height / 1.75 * 15, green)
+        message_display('Potion Used', game.settings.width / 2 * 15, game.settings.height / 1.75 * 15, green_dark)
+        pygame.mixer.Sound.play(drinking_potion)
         time.sleep(2)
         game_loop('human')
 
@@ -274,6 +277,8 @@ def crash():
         time.sleep(2)
     else:   
         message_display('Game over!', game.settings.width / 2 * 15, game.settings.height / 1.75 * 15, red)
+        
+        pygame.mixer.Sound.play(game_over)
         time.sleep(2)
         
     # creates new background for main page
@@ -283,6 +288,7 @@ def crash():
     # loads title for main page
     title = pygame.image.load("logos/title.png")
     screen.blit(title, (25, 50))
+    pygame.mixer.music.play(-1)
 
 # Main menu - First function called by code
 def initial_interface():
@@ -299,6 +305,7 @@ def initial_interface():
     # loads title for main page
     title = pygame.image.load("logos/title.png")
     screen.blit(title, (25, 50))
+    
 
     while intro:
         # Application is closed
@@ -391,7 +398,6 @@ def game_loop(player, fps=10):
     
     bg_img2 = pygame.image.load('images/background.png')
     
-    pygame.mixer.music.load('./sound/background.mp3')
     pygame.mixer.music.play(-1)
     
     while not game.game_end() and not config.game_over:
@@ -479,4 +485,8 @@ def human_move():
 if __name__ == "__main__":
     kick_start(background) # loading screen
     team_logo_display() # loads logo
+    
+    pygame.mixer.music.load('./sound/background.mp3')
+    pygame.mixer.music.play(-1)
+    
     initial_interface() # Loads main menu
