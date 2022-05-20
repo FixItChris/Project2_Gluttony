@@ -169,7 +169,7 @@ class Mushroom(Strawberry):
 class Super_Fruit(Strawberry):
     def __init__(self, settings):
         super().__init__(settings)
-        self.image = pygame.image.load('images/super_fruit.png') # REPLACE
+        self.image = pygame.image.load('images/super_fruit.png')
     
     def random_pos(self, snake):
         self.position[0] = random.randint(0, self.settings.width-1)
