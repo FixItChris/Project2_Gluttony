@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 # Importing necessary modules
 import pygame, random
 import numpy as np
@@ -50,7 +48,8 @@ class Snake:
         self.segments = [[6 - i, 6] for i in range(3)] # Position of entire snake on grid
         self.score = 0 # Sets/resets user score to 0
         self.facing = "right" # Sets snake to be facing to the right (Modification - Bug Fix)
-
+    
+    # Modification - Restart game using potion
     def new_life(self):
         self.position = [6, 6]
         self.segments = [[6 - i, 6] for i in range(self.score+3)]
@@ -166,10 +165,11 @@ class Mushroom(Strawberry):
         if self.position in snake.segments:
             self.random_pos(snake)
 
+# Modification - Super fruit
 class Super_Fruit(Strawberry):
     def __init__(self, settings):
         super().__init__(settings)
-        self.image = pygame.image.load('images/super_fruit.png') # REPLACE
+        self.image = pygame.image.load('images/super_fruit.png')
     
     def random_pos(self, snake):
         self.position[0] = random.randint(0, self.settings.width-1)
@@ -178,6 +178,7 @@ class Super_Fruit(Strawberry):
         if self.position in snake.segments:
             self.random_pos(snake)
 
+# Modification - Potion
 class Potion(Strawberry):
     def __init__(self, settings):
         super().__init__(settings)
@@ -193,8 +194,6 @@ class Potion(Strawberry):
 
 # Initialises all other previous classes, and defines functions for user input/overall gameplay
 class Game:
-    """
-    """
     def __init__(self):
         self.settings = Settings() # Initialises Settings class above
         self.snake = Snake() # Initialises Snake class above
@@ -263,9 +262,10 @@ class Game:
             self.strawberry.random_pos(self.snake) # Finds new position to put next strawberry
             reward = 1
             self.snake.score += 1 # Updates user score
-        
+       
+            # Modification - Special fruit chances
             rng = random.randint(0,100)
-            if rng > 95 and not config.potion_out and not config.has_potion:
+            if rng > 45 and not config.potion_out and not config.has_potion:
                 config.potion_out = 1
                 self.potion.random_pos(self.snake)
                 self.potion.blit(screen)
