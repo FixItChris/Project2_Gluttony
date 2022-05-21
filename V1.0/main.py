@@ -32,7 +32,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///snake.db'
 db = SQLAlchemy(app)
 
 
-# Definition of colours - Established here for easy and intuitive implementation into later code
+# Definition of colours - Established here for easy implementation into later code
 black = pygame.Color(0, 0, 0)
 white = pygame.Color(255, 255, 255)
 
@@ -434,6 +434,7 @@ def game_loop(player, fps=8):
     while not game.game_end() and not config.game_over:
         pygame.event.pump()
 
+        # Modification - Progressive difficulty
         if game.snake.score >= speed_up_score:
             config.fps += 1
             speed_up_score += 5

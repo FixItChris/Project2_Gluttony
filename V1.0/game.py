@@ -54,10 +54,10 @@ class Snake:
     
     # Sets snake's starting position, and initialises the user's score
     def initialize(self):
-        self.position = [6, 6] # Position of head
-        self.segments = [[6 - i, 6] for i in range(3)] # Position of entire snake on grid
-        self.score = 0 # Sets/resets user score to 0
-        self.facing = "right" # Sets snake to be facing to the right (Modification - Bug Fix)
+        self.position = [6, 6] 
+        self.segments = [[6 - i, 6] for i in range(3)] 
+        self.score = 0 
+        self.facing = "right" # Modification - Spawn kill bug fix
     
     # Modification - Restart game using potion
     def new_life(self):
@@ -149,8 +149,9 @@ class Strawberry():
         # Randomly selects position of food on board
         self.position[0] = random.randint(0, self.settings.width-1)
         self.position[1] = random.randint(0, self.settings.height-1)
-        
-        if self.position in snake.segments: # If strawberry is placed where snake already is, try again
+       
+        # If strawberry is placed where snake already is, try again
+        if self.position in snake.segments: 
             self.random_pos(snake)
 
     # Displays image of strawberry on screen
@@ -202,7 +203,7 @@ class Potion(Strawberry):
             self.random_pos(snake)
  
 
-# Initialises all other previous classes, and defines functions for user input/overall gameplay
+# Initialises all other previous classes, defines functions for user input/overall gameplay
 class Game:
     def __init__(self):
         self.settings = Settings() # Initialises Settings class above
@@ -228,33 +229,19 @@ class Game:
         config.potion_out = 0
         config.has_potion = 0 
     
-    # Defines current state of the snake and strawberry during gameplay (CURRENTLY UNUSED)
-    def current_state(self):         
-        state = np.zeros((self.settings.width+2, self.settings.height+2, 2))
-        expand = [[0, 1], [0, -1], [-1, 0], [1, 0], [0, 2], [0, -2], [-2, 0], [2, 0]]
-        
-        for position in self.snake.segments:
-            state[position[1], position[0], 0] = 1
-        
-        state[:, :, 1] = -0.5        
 
-        state[self.strawberry.position[1], self.strawberry.position[0], 1] = 0.5
-        for d in expand:
-            state[self.strawberry.position[1]+d[0], self.strawberry.position[0]+d[1], 1] = 0.5
-        return state
-    
     # Converts user arrow key input into a specific integer (defined in move_dict)
     def direction_to_int(self, direction):
-        direction_dict = {value : key for key,value in self.move_dict.items()} # Reverses key:value pairs in dict
-        return direction_dict[direction] # Returns integer representation
+        direction_dict = {value : key for key,value in self.move_dict.items()}
+        return direction_dict[direction]
     
-    # Implements main game logic - user input, if the snake consumes the food, if the game is finished
+    # Main game logic - checks user input, if the snake consumes food, if the game is finished
     def do_move(self, move, screen):
         move_dict = self.move_dict
         
         change_direction = move_dict[move] # Defined by user input
         
-        # Checks the user input and that the input is valid, then updates the direction of the snake's head
+        # Checks for valid input, then updates the direction of the snake's head
         if change_direction == 'right' and not self.snake.facing == 'left':
             self.snake.facing = change_direction
         if change_direction == 'left' and not self.snake.facing == 'right':
@@ -290,7 +277,7 @@ class Game:
                 self.mushroom.random_pos(self.snake)
                 self.mushroom.blit(screen)
 
-
+        # Modification - Mechanics of special fruits
         elif self.snake.position == self.potion.position and config.potion_out:
             pygame.mixer.Sound.play(potion_sound)
             config.potion_out = 0
@@ -315,9 +302,10 @@ class Game:
             else:
                 config.fps -= 3
                 pygame.mixer.Sound.play(mushroom_slow)
-
+        
         else:
-            self.snake.segments.pop() # Removes last segment (tail) from snake so that it stays the same length
+            # Removes last segment (tail) from snake so that it stays the same length
+            self.snake.segments.pop() 
             reward = 0
                 
         if self.game_end(): # Checks lose conditions (below)
